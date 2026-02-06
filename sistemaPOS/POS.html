@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>POS</title>
+    <link rel="shortcut icon" href="../img/icono_tienda.png" type="image/png">
+    <link rel="stylesheet" href="POS.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+</head>
+
+<body>
+
+    <header class="main-header">
+        <img src="../img/logo.png" alt="logo" class="logo-img" onclick="location.reload()">
+    </header>
+
+    <div class="spinner-overlay" id="spinner-overlay">
+        <div class="spinner-container">
+            <div class="spinner"></div>
+            <div class="spinner-text" id="spinner-text">Cargando...</div>
+        </div>
+    </div>
+
+    <div class="edit-mode-banner" id="edit-mode-banner" onclick="cancelEdit()"></div>
+
+    <div class="main-grid">
+        <div class="col sidebar-main active-m" id="m-col-1">
+            <button class="nav-link active nav-btn" onclick="handleNavClick(this, 'nuevo')"><i>➕</i>Nuevo</button>
+            <button class="nav-link nav-btn" id="btn-mesas"
+                onclick="handleNavClick(this, 'mesas')"><i>🪑</i>Mesas</button>
+            <button class="nav-link nav-btn" id="btn-pedidos"
+                onclick="handleNavClick(this, 'pedidos')"><i>📋</i>Pedidos</button>
+        </div>
+
+
+
+        <div class="col catalog-container" id="m-col-2">
+            <div style="padding: 0px 10px 10px 10px ; position: relative; text-align: center;">
+                <h3 class="section-title">Productos</h3>
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="text" id="search-input" placeholder="Buscar producto..." oninput="filterProducts()"
+                        style="width: 100%; padding: 6px 40px 6px  10px ; border-radius: 30px; border: 1px solid var(--border); background: #111; color: white; outline: none;">
+
+                    <span id="clear-search" onclick="clearSearch()"
+                        style="position: absolute; right: 12px; color: #666; cursor: pointer; display: none; font-size: 1.2rem; font-weight: bold;">
+                        &times;
+                    </span>
+                </div>
+            </div>
+            <div class="catalog-split">
+                <div class="cat-list-vertical" id="v-cats"></div>
+                <div class="grid-items" id="v-prods"></div>
+            </div>
+        </div>
+
+        <div class="col service-sidebar" id="m-col-3">
+            <div id="service-content">
+                <h3 class="section-title">Selecciona un servicio</h3>
+                <div id="contenedor-totales-dinamico" style="display: flex; grid-template-columns: 1fr 3fr; gap: 5px;">
+                    <button class="btn-method" onclick="setMethod(this, 'Mesa')" style="flex:1">MESA</button>
+                    <button class="btn-method" onclick="setMethod(this, 'Recoger en tienda')"
+                        style="flex:1">RECOGER</button>
+                    <button class="btn-method" onclick="setMethod(this, 'Domicilio')" style="flex:1">DOMICILIO</button>
+                </div>
+                <div class="dynamic-fields" id="fields-container"></div>
+            </div>
+
+            <div id="view-mesas" class="view-overlay">
+                <span class="close-view" onclick="closeLists()">×</span>
+                <h3>Mesas Activas</h3>
+
+                <div style="padding: 10px; text-align: center; position: relative;">
+                    <input type="text" id="search-mesas" placeholder="Buscar por nombre o mesa..." oninput="onSearchMesasInput()" style="width: 100%; padding: 8px 30px 8px 10px ; border-radius: 25px; border: 1px solid var(--border); background: #111; color: #fff; outline: none;">
+                    <span id="clear-search-mesas" onclick="clearSearchMesas()" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.2rem; color: #999; font-weight: bold; display: none;">&times;</span>
+                </div>
+
+                <div id="mesas-list"></div>
+            </div>
+
+            <div id="view-pedidos" class="view-overlay">
+                <span class="close-view" onclick="closeLists()">×</span>
+                <h3>Historial de Pedidos</h3>
+
+                <div style="padding: 10px; text-align: center; position: relative;">
+                    <input type="text" id="search-pedidos" placeholder="Buscar por nombre o factura..." oninput="onSearchPedidosInput()" style="width: 100%; padding: 8px 30px 8px 10px; border-radius: 25px; border: 1px solid var(--border); background: #111; color: #fff; outline: none;">
+                    <span id="clear-search-pedidos" onclick="clearSearchPedidos()" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 1.2rem; color: #999; font-weight: bold; display: none;">&times;</span>
+                </div>
+
+                <div style="text-align: center; padding: 10px; color: var(--accent); font-weight: bold;">
+                    HOY Y AYER
+                </div>
+                <div id="pedidos-list"></div>
+            </div>
+        </div>
+
+        <div class="col order-panel" id="m-col-4">
+            <div style="padding: 15px; border-bottom: 1px solid #eee;">
+                <h2 id="order-title" style="font-size: 1rem;">Pedido: </h2>
+            </div>
+            <div class="order-content" id="cart-box"></div>
+            <div style="border-top: 1px solid #eee; padding: 10px 8px;">
+                <textarea id="val-observaciones" class="input-pro"
+                    placeholder="Observaciones..." oninput="updateButtonState()"
+                    style="background: #fff; color: #000; border: 1px solid #ddd; height: 50px; font-size: 0.8rem; resize: none;"></textarea>
+            </div>
+            <div class="order-footer">
+                <div class="order-method">
+                    <select id="val-metodo-pago" class="input-pro" onchange="updateButtonState(); mostrarCampoMonto()"
+                        style="background: #fff; color: #000; border: 1px solid #ddd; padding: 8px; height: 40px; font-weight: bold;">
+                        <option value="" selected disabled>Seleccionar método de pago</option>
+                        <option value="Efectivo">💵 Efectivo</option>
+                        <option value="Transferencia">💳 Transferencia</option>
+                        <option value="Efectivo/Transferencia">💰 Efectivo / Transferencia</option>
+                    </select>
+                </div>
+                <div id="container-monto-efectivo" style="display: none; margin-top: 10px;">
+                    <input type="text" id="val-monto-efectivo" class="input-pro" placeholder="Monto recibido (opcional)" oninput="formatearMontoColombiano(this)" style="background: #fff; color: #000; border: 1px solid #ddd; padding: 8px; height: 40px;">
+                </div>
+
+                <div class="order-total-row">
+                    <span>TOTAL</span><span id="order-total">$ 0</span>
+                </div>
+                <div id="cambio-info" style="margin-top: 8px; margin-bottom: 8px; background: none; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; color: #333; display: none;"></div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn-action" onclick="finish()" style="flex:1">ENVIAR PEDIDO</button>
+                    <button id="btn-cancel-edit" class="btn-action" onclick="cancelEdit()"
+                        style="flex:1; background:#666; display:none;">❌ CANCELAR</button>
+
+                </div>
+                <div id="">
+                    <button id="btn-close-mesa" class="btn-action" onclick="closeMesa()"
+                        style="flex:1; background:#d32f2f; display:none; margin-top: 5px;">🔐 CERRAR MESA</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-bar" id="bottom-tabs">
+        <div class="tab-item disabled" id="t-1" onclick="goStep(1)">
+            <span class="tab-icon">🍽️</span>
+            <span class="tab-label">Productos</span>
+        </div>
+        <div class="tab-item disabled" id="t-2" onclick="goStep(2)">
+            <span class="tab-icon">📝</span>
+            <span class="tab-label">Datos</span>
+        </div>
+        <div class="tab-item disabled" id="t-3" onclick="goStep(3)">
+            <div style="position: relative; display: inline-block;">
+                <span class="tab-icon">🛒</span>
+                <span id="badge-mobile" class="mobile-badge">0</span>
+            </div>
+            <span class="tab-label">Pedido</span>
+        </div>
+    </div>
+
+    <!-- INDICADOR DE SIGUIENTE PASO EN MÓVIL -->
+    <div class="step-indicator" id="step-indicator" onclick="goNextStep()">
+        <div class="step-indicator-content">
+
+            <div class="step-text" id="step-text"></div>
+        </div>
+    </div>
+
+    <div id="overlay-suspension" onclick="location.reload()">
+    <div class="suspension-content">
+        <img class="pulse-text" src="../img/logo.png" alt="suspension-img">
+        <h3 class="pulse-text">🌙</h3>
+        <h2 class="pulse-text">Sistema en reposo</h2>
+        <p>(Haz clic o toca cualquier parte para continuar)</p>
+    </div>
+</div>
+
+    <script src="POS.js"></script>
+</body>
+
+</html>

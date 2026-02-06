@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panel de Pedidos</title>
+    <link rel="icon" type="image/png" href="../img/icono_tienda.png" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* ================================\
+       VARIABLES / RESET (Estilo Unificado)
+       ================================ */
+      :root {
+        --primary: #5bc0de;
+        --accent: #46b8da;
+        --muted: #909ba7;
+        --success: #63d471;
+        --warning: #f8c050;
+        --danger: #ff6b6b;
+        --bg: #1e1e2d; /* Fondo oscuro */
+        --card: #2b2b3f; /* Color de tarjeta oscura */
+        --line: #4a4a68;
+        --text: #f1f1f1; /* Texto claro */
+        --input: #3c3c50;
+        --shadow: rgba(0, 0, 0, 0.25);
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--bg);
+        margin: 0;
+        padding: 1rem;
+        color: var(--text);
+      }
+
+      h1 {
+        text-align: center;
+        color: var(--text);
+        margin-bottom: 0.5rem;
+      }
+
+      /* BOTÓN VOLVER */
+      .volver-admin {
+        display: flex;
+        justify-content: flex-start; /* Se ajusta para que solo quede el botón de volver */
+        margin-bottom: 15px;
+      }
+
+      .volver-admin button {
+        background: var(--primary);
+        color: var(--text);
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        box-shadow: 0 4px 12px var(--shadow);
+        transition: all 0.25s ease;
+      }
+
+      .volver-admin button:hover {
+        background: var(--accent);
+        transform: translateY(-2px);
+      }
+
+      /* FILTROS */
+      .filtros {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+        margin-bottom: 20px;
+        background: var(--card);
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px var(--shadow);
+      }
+
+      .filtros input,
+      .filtros button {
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        font-size: 0.9rem;
+        background: var(--input);
+        color: #fff;
+      }
+
+      .filtros input:focus,
+      .filtros button:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      .filtros button {
+        background: var(--accent);
+        color: var(--text);
+        cursor: pointer;
+        transition: background 0.2s;
+        font-weight: 600;
+      }
+
+      .filtros button:hover {
+        background: var(--primary);
+      }
+
+      /* ==== AGRUPADOR DE MES === */
+      .mes-header {
+        cursor: pointer;
+        background: var(--input);
+        padding: 12px 16px;
+        border-radius: 6px;
+        margin-top: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        transition: background 0.2s;
+        color: var(--text);
+      }
+
+      .mes-header:hover {
+        background: var(--line);
+      }
+
+      .mes-header span {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+
+      .pedidos-mes {
+        margin-top: 5px;
+        transition: max-height 0.3s ease-out;
+        overflow: hidden;
+      }
+
+      .pedidos-mes.oculto {
+        max-height: 0;
+        margin-top: 0;
+      }
+
+      /* DETALLE DEL PEDIDO */
+      .pedido {
+        background: var(--card);
+        margin-bottom: 10px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px var(--shadow);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid var(--line);
+      }
+
+      .pedido.activo {
+        border-color: var(--primary);
+      }
+
+      .pedido-header {
+        padding: 12px 16px;
+        background: var(--card);
+        color: var(--text);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        font-weight: 600;
+        flex-wrap: wrap;
+        border-bottom: 1px solid var(--line);
+        border-radius: 8px 8px 0 0;
+        transition: background 0.2s ease;
+        font-size: 14px;
+      }
+
+      .pedido-header:hover {
+        background: var(--input);
+      }
+
+      .pedido-header div {
+        display: flex;
+        line-height: 1.3;
+        justify-content: space-between;
+      }
+
+      .pedido-detalle {
+        display: none;
+        padding: 14px 16px;
+        background: var(--card);
+        border-top: 1px solid var(--line);
+        color: var(--text);
+      }
+
+      .pedido.activo .pedido-detalle {
+        display: block;
+      }
+
+      /* === CABECERA DE PEDIDO === */
+      .pedido-info {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .pedido-linea {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      }
+
+      .pedido-nombre {
+        font-weight: 600;
+        color: var(--text);
+        font-size: 0.95rem;
+      }
+
+      .pedido-tipo-entrega {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--primary);
+        border: 1px solid var(--primary);
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-left: 8px; /* Separación del nombre */
+        flex-shrink: 0;
+      }
+
+      .pedido-factura {
+        color: var(--muted);
+        font-weight: 400;
+        margin-top: 2px;
+        font-size: 0.85rem;
+      }
+
+      /* TOTAL A PAGAR (PROMINENTE) */
+      .pedido-total {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--success);
+        flex-shrink: 0;
+      }
+
+      /* Lista de productos */
+      .productos {
+        background: var(--input);
+        padding: 8px 10px;
+        border-radius: 6px;
+        font-family: monospace;
+        white-space: pre-wrap;
+        font-size: 0.85rem;
+        margin-top: 6px;
+        border: 1px solid var(--line);
+        color: var(--text);
+      }
+
+      .pedido-detalle a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .pedido-detalle a:hover {
+        text-decoration: underline;
+      }
+
+      /* Botón de factura */
+      .boton-factura {
+        margin-top: 10px;
+        background: var(--primary);
+        color: var(--text);
+        border: none;
+        padding: 10px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background 0.25s ease;
+      }
+
+      .boton-factura:hover {
+        background: var(--accent);
+      }
+
+      .cargando {
+        text-align: center;
+        color: var(--muted);
+        font-size: 1rem;
+        padding: 20px;
+      }
+
+      /* === ESTILO PARA BOTÓN ELIMINAR === */
+      .boton-eliminar {
+        background: var(--danger);
+        color: var(--text);
+        border: none;
+        padding: 10px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background 0.25s ease;
+        margin-top: 10px;
+      }
+
+      .boton-eliminar:hover {
+        background: #c82333;
+      }
+
+      /* Para que los botones se vean bien en móvil */
+      .pedido-detalle button {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 10px;
+      }
+
+      @media (min-width: 600px) {
+        .pedido-detalle button {
+          display: inline-block;
+          width: auto;
+          margin-right: 10px;
+        }
+      }
+
+      /* Pequeño ajuste para que los filtros se vean mejor */
+      @media (max-width: 500px) {
+        .filtros input,
+        .filtros button {
+          width: 100%;
+          box-sizing: border-box;
+        }
+      }
+
+      /* Dentro de <style> en pedidos.html */
+
+      /* ==================================== */
+      /* ⚡ ANIMACIÓN DE PULSACIÓN (Opacidad/Brillo) */
+      /* ==================================== */
+
+      /* 1. Definición de la animación */
+      @keyframes pulse-new {
+        0% {
+          background-color: #2e4a63;
+          box-shadow: inset 0 0 10px rgba(91, 192, 222, 0.2);
+        }
+        100% {
+          background-color: #3d6285;
+          box-shadow: inset 0 0 20px rgba(91, 192, 222, 0.5);
+        }
+      }
+
+      /* 2. Aplicación de la animación */
+      /* La clase 'new' se añade temporalmente al pedido-header para aplicar el efecto */
+      /* Reemplaza o añade esto en tu sección de <style> */
+
+      .pedido-header.new {
+        background-color: #2e4a63 !important; /* Azul oscuro resaltado */
+        border-left: 5px solid var(--primary); /* Barra lateral para mayor visibilidad */
+        animation: pulse-new 2s infinite alternate ease-in-out;
+      }
+
+      /* Modificamos la animación para que brille sobre ese nuevo color */
+      @keyframes pulse-new {
+        0% {
+          background-color: #2e4a63;
+          box-shadow: inset 0 0 10px rgba(91, 192, 222, 0.2);
+        }
+        100% {
+          background-color: #3d6285;
+          box-shadow: inset 0 0 20px rgba(91, 192, 222, 0.5);
+        }
+      }
+
+      /* ==================================== */
+      /* 🔔 ESTILO MEJORADO PARA EL AVISO DE NUEVOS PEDIDOS */
+      /* ==================================== */
+
+      /* Animación de Pulso de Fondo para llamar la atención (mantener si usas la clase 'active-pulse') */
+      @keyframes flash-attention {
+        0% {
+          background-color: var(--card);
+          border-color: var(--warning);
+        }
+        50% {
+          background-color: var(--warning);
+          border-color: var(--warning);
+        }
+        100% {
+          background-color: var(--card);
+          border-color: var(--warning);
+        }
+      }
+
+      #avisoPedidosNuevos {
+        /* Estilos generales del contenedor */
+        background-color: var(--card);
+        color: var(
+          --warning
+        ); /* Color de advertencia para el texto principal */
+        text-align: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+        padding: 15px; /* Reducimos un poco el padding */
+        margin: 20px auto;
+        width: 90%;
+        max-width: 600px;
+        border-radius: 10px;
+        border: 2px solid var(--warning);
+        box-shadow: 0 6px 15px var(--shadow);
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        /* Configuración Flexbox para centrar y estructurar las líneas de texto */
+        display: flex;
+        flex-direction: column; /* Apila el título y el subtítulo */
+        align-items: center;
+        justify-content: center;
+        line-height: 1.2; /* Espacio entre líneas */
+      }
+
+      #avisoPedidosNuevos:hover {
+        background-color: var(--input);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      }
+
+      /* 🆕 Estilo específico para el subtítulo */
+      .subtitulonotificacion {
+        /* Ajusta el tamaño y el peso para que sea secundario */
+        font-size: 0.85rem;
+        font-weight: 400; /* Normal */
+        color: var(
+          --muted
+        ); /* Un color más suave para que no compita con el título */
+        margin-top: 4px; /* Pequeña separación del título */
+        /* Asegura que no se expanda en la línea principal */
+        display: block;
+      }
+
+      /* Clase para activar el pulso (si la usas en JavaScript) */
+      #avisoPedidosNuevos.active-pulse {
+        animation: flash-attention 1.5s infinite alternate ease-in-out;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="volver-admin">
+      <button onclick="window.location.href='admin.html'">
+        ⚙️ Ir al Panel Admin
+      </button>
+    </div>
+    <h1>Panel de Pedidos</h1>
+
+    <audio id="alertaAudio" src="../sonidos/ping4.mp3" preload="auto"></audio>
+
+    <div class="filtros">
+      <input
+        type="text"
+        id="buscar"
+        placeholder="Buscar por nombre o factura..."
+      />
+      <input type="date" id="fechaFiltro" />
+      <button id="filtrarBtn">🔍 Buscar</button>
+      <button id="recargarBtn">🔃 Recargar</button>
+    </div>
+
+    <div id="avisoPedidosNuevos">
+      ⚡ NUEVO(S) PEDIDO(S) ⚡
+      <span class="subtitulonotificacion">click para verlo(s)</span>
+    </div>
+
+    <div id="contenedorPedidos">
+      <div class="cargando">Cargando pedidos...</div>
+    </div>
+
+    <script>
+      const contenedor = document.getElementById("contenedorPedidos");
+      // 🚨 Referencia al elemento de audio
+      const audio = document.getElementById("alertaAudio");
+      // 🔔 Referencia al div de aviso
+      const avisoPedidosNuevos = document.getElementById("avisoPedidosNuevos");
+
+      let pedidosGlobal = [];
+      let ultimasFacturas = new Set();
+      let facturasNuevasTemporales = [];
+      let cantidadNuevosAnterior = 0;
+
+      let API_URL = "";
+      // 🆕 Almacena las facturas de los pedidos que están abiertos
+      let facturasAbiertas = new Set();
+
+      const formatoCOP = (valor) => {
+        const n = Number(valor) || 0;
+        return n.toLocaleString("es-CO", {
+          style: "currency",
+          currency: "COP",
+          minimumFractionDigits: 0,
+        });
+      };
+
+      /**
+       * Guarda el estado de los pedidos abiertos antes de la recarga.
+       */
+      function guardarEstadoPedidosAbiertos() {
+        facturasAbiertas.clear();
+        document
+          .querySelectorAll(".pedido.activo .pedido-header")
+          .forEach((header) => {
+            // Se busca la factura dentro de la estructura, si existe
+            const facturaDiv = header.querySelector(".pedido-factura");
+            if (facturaDiv) {
+              // Se extrae el número de factura
+              const facturaTexto = facturaDiv.textContent
+                .trim()
+                .split("|")[0]
+                .trim();
+              if (facturaTexto && facturaTexto !== "—") {
+                facturasAbiertas.add(facturaTexto);
+              }
+            }
+          });
+      }
+
+      async function cargarPedidos(auto = false) {
+        if (!auto) {
+          guardarEstadoPedidosAbiertos();
+          recargarBtn.disabled = true;
+          recargarBtn.textContent = "⏳ Actualizando...";
+          avisoPedidosNuevos.style.display = "none";
+          avisoPedidosNuevos.classList.remove("active-pulse");
+        }
+
+        try {
+          const res = await fetch(API_URL + "?t=" + Date.now());
+          const data = await res.json();
+
+          const nuevasFacturas = data
+            .map((p) => p.numeroFactura)
+            .filter((f) => f);
+          const nuevos = nuevasFacturas.filter((f) => !ultimasFacturas.has(f));
+          const huboCargaPrevia = ultimasFacturas.size > 0;
+
+          if (nuevos.length > 0 && huboCargaPrevia) {
+            // Guardamos los nuevos en la lista temporal para resaltarlos
+            facturasNuevasTemporales = nuevos;
+
+            if (nuevos.length > cantidadNuevosAnterior) {
+              try {
+                audio.play();
+              } catch (e) {
+                console.warn("Audio bloqueado");
+              }
+              cantidadNuevosAnterior = nuevos.length;
+            }
+
+            mostrarAvisoNuevoPedido();
+            avisoPedidosNuevos.style.display = "flex";
+            avisoPedidosNuevos.classList.add("active-pulse");
+            avisoPedidosNuevos.innerHTML = `⚡ ${nuevos.length} PEDIDO(S) NUEVO(S) ⚡ <span class="subtitulonotificacion">click para verlo(s)</span>`;
+
+            pedidosGlobal = data;
+
+            // 🟢 SI EL USUARIO PULSA RECARGAR MANUALMENTE:
+            if (!auto) {
+              ultimasFacturas = new Set(nuevasFacturas);
+              mostrarPedidos(data, facturasNuevasTemporales); // Resaltamos los nuevos
+              facturasNuevasTemporales = []; // Limpiamos después de mostrar
+              cantidadNuevosAnterior = 0;
+            }
+          } else {
+            if (!auto || !huboCargaPrevia) {
+              ultimasFacturas = new Set(nuevasFacturas);
+              pedidosGlobal = data;
+              mostrarPedidos(data, []);
+              facturasNuevasTemporales = [];
+              cantidadNuevosAnterior = 0;
+            }
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          if (!auto)
+            contenedor.innerHTML = "<p class='cargando'>Error de conexión.</p>";
+        } finally {
+          if (!auto) {
+            recargarBtn.disabled = false;
+            recargarBtn.textContent = "🔃 Recargar";
+          }
+        }
+      }
+
+function mostrarPedidos(pedidos, nuevasFacturas = [], esBusquedaTexto = false) {
+  const mesesNombres = [
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
+  ];
+
+  // Agrupador por Año y Mes para evitar mezcla de años
+  const pedidosPorMesAnio = {};
+
+  // Obtener mes y año actual para el despliegue automático
+  const ahora = new Date();
+  const mesActualNum = (ahora.getMonth() + 1).toString().padStart(2, "0");
+  const anioActualNum = ahora.getFullYear().toString();
+  const llaveActual = `${anioActualNum}-${mesActualNum}`;
+
+  pedidos.forEach((p) => {
+    if (!p.fecha) return;
+    const partes = p.fecha.split("/");
+    if (partes.length !== 3) return;
+
+    const mes = partes[1].padStart(2, "0");
+    const anio = partes[2];
+    const llave = `${anio}-${mes}`; // Ejemplo: "2026-01"
+
+    if (!pedidosPorMesAnio[llave]) pedidosPorMesAnio[llave] = [];
+    pedidosPorMesAnio[llave].push(p);
+  });
+
+  // === LÓGICA ROBUSTA PARA MOSTRAR "NO HAY REGISTROS" ===
+  if (pedidos.length === 0 || Object.keys(pedidosPorMesAnio).length === 0) {
+    contenedor.innerHTML = "<div class='cargando'>No hay registros.</div>";
+    return;
+  }
+
+  contenedor.innerHTML = "";
+  const nuevosElementosHeader = [];
+
+  // Ordenamos las llaves (Año-Mes) de mayor a menor
+  Object.keys(pedidosPorMesAnio)
+    .sort((a, b) => b.localeCompare(a))
+    .forEach((llave) => {
+      const [anio, mes] = llave.split("-");
+      
+      // LÓGICA DE APERTURA: 
+      // Se muestra abierto si es el mes actual O si el usuario está buscando texto (nombre/factura)
+      const debeEstarAbierto = (llave === llaveActual) || esBusquedaTexto;
+
+      const headerMes = document.createElement("div");
+      headerMes.className = "mes-header";
+
+      // Muestra el año solo si NO es el año actual
+      const textoAnio = anio !== anioActualNum ? ` ${anio}` : "";
+      headerMes.innerHTML = `${mesesNombres[Number(mes) - 1]}${textoAnio} <span>${pedidosPorMesAnio[llave].length} pedidos</span>`;
+      contenedor.appendChild(headerMes);
+
+      const bloqueMes = document.createElement("div");
+      bloqueMes.className = "pedidos-mes";
+
+      if (!debeEstarAbierto) {
+        bloqueMes.classList.add("oculto");
+      }
+
+      pedidosPorMesAnio[llave]
+        .slice()
+        .reverse()
+        .forEach((p) => {
+          const rowIndex = p.rowIndex;
+          const numFactura = (p.numeroFactura || "SIN NÚMERO").replace(/'/g, "\\'");
+          const esNuevo = nuevasFacturas.includes(p.numeroFactura);
+          const debeEstarActivo = facturasAbiertas.has(p.numeroFactura);
+
+          const div = document.createElement("div");
+          div.className = `pedido ${debeEstarActivo ? "activo" : ""}`;
+
+          div.innerHTML = `
+          <div class="pedido-header ${esNuevo ? "new" : ""}">
+            <div class="pedido-info">
+              <div class="pedido-linea">
+                <span class="pedido-nombre">${p.nombre || "Cliente sin nombre"}</span>
+                <span class="pedido-tipo-entrega">${p.tipoEntrega || "-"}</span>
+              </div>
+              <div class="pedido-linea">
+                <div class="pedido-factura">
+                  ${p.numeroFactura || "—"} | ${p.fecha || "—"} ${p.hora || ""}
+                </div>
+                <div class="pedido-total">${formatoCOP(p.totalPagar)}</div>
+              </div>
+            </div>
+          </div>
+          <div class="pedido-detalle">
+            <p><strong>Tipo Entrega:</strong> ${p.tipoEntrega || "—"}</p>
+            <p><strong>Teléfono:</strong> ${p.telefono ?? "0"}</p>
+            ${p.mesa ? `<p><strong>Mesa:</strong> ${p.mesa}</p>` : ""}
+            ${p.direccion ? `<p><strong>Dirección:</strong> ${p.direccion}</p>` : ""}
+            ${p.puntoReferencia ? `<p><strong>Punto Ref:</strong> ${p.puntoReferencia}</p>` : ""}
+            <p><strong>Productos:</strong></p>
+            <div class="productos">${(p.productos || "").replace(/\n/g, "<br>")}</div>
+            <p><strong>Total Productos:</strong> ${formatoCOP(p.totalProductos)}</p>
+            <p><strong>Costo Domicilio:</strong> ${formatoCOP(p.costoDomicilio)}</p>
+            <p><strong>Total a Pagar:</strong> ${formatoCOP(p.totalPagar)}</p>
+            <p><strong>Método de Pago:</strong> ${p.metodoPago || "—"}</p>
+            ${p.ubicacionGoogleMaps ? `<p><strong>Ubicación:</strong> <a href="${p.ubicacionGoogleMaps}" target="_blank">Ver mapa</a></p>` : ""}
+            ${p.observaciones ? `<p><strong>Observaciones:</strong> ${p.observaciones}</p>` : ""}
+            <button class="boton-factura">👁️ Ver Factura</button>
+            <button class="boton-eliminar" data-row-index="${rowIndex}" onclick="eliminarPedidoAPI(${rowIndex}, '${numFactura}')">🗑️ Eliminar</button>
+          </div>
+        `;
+
+          const header = div.querySelector(".pedido-header");
+          if (header) {
+            header.addEventListener("click", () => {
+              div.classList.toggle("activo");
+              const facturaTexto = div.querySelector(".pedido-factura").textContent.trim().split("|")[0].trim();
+              if (div.classList.contains("activo")) {
+                facturasAbiertas.add(facturaTexto);
+              } else {
+                facturasAbiertas.delete(facturaTexto);
+              }
+            });
+            if (esNuevo) {
+              nuevosElementosHeader.push(header);
+            }
+          }
+div.querySelector(".boton-factura").addEventListener("click", () => {
+    let productosArray = [];
+    if (typeof p.productos === "string") {
+        productosArray = p.productos.split("\n").filter((x) => x.trim() !== "").map((linea) => {
+
+            // 1. Extraes el texto de adentro
+            const matchInstrucciones = linea.match(/\(([^)]+)\)/);
+            const instruccionesLimpias = matchInstrucciones ? matchInstrucciones[1] : "";
+            
+            // 2. Creas la versión SIN paréntesis para limpiar el nombre
+            let lineaSinNotas = linea.replace(/\s*\([^)]+\)/g, "").trim();
+
+            // 3. ¡IMPORTANTE! Usamos 'lineaSinNotas' aquí abajo:
+            const ultimoGuionIndex = lineaSinNotas.lastIndexOf("-"); 
+            const parteIzquierda = lineaSinNotas.substring(0, ultimoGuionIndex).trim();
+            const partePrecio = lineaSinNotas.substring(ultimoGuionIndex + 1).trim();
+
+            const matchCantidad = parteIzquierda.match(/\s+x(\d+)$/i);
+            let nombreFinal = parteIzquierda;
+            let cantidadFinal = 1;
+
+            if (matchCantidad) {
+                cantidadFinal = parseInt(matchCantidad[1]);
+                nombreFinal = parteIzquierda.substring(0, matchCantidad.index).trim();
+            }
+
+            return {
+                nombre: nombreFinal,
+                cantidad: cantidadFinal,
+                precio: Number(partePrecio.replace(/\D/g, "")) || 0,
+                instrucciones: instruccionesLimpias // Se envía el texto limpio
+            };
+        });
+    }
+
+    const pedidoLocal = {
+        tipoEntrega: p.tipoEntrega, 
+        factura: p.numeroFactura, 
+        fecha: p.fecha, 
+        hora: p.hora,
+        cliente: { 
+            nombre: p.nombre, 
+            telefono: p.telefono ?? "0", 
+            mesa: (p.mesa && p.mesa !== "") ? p.mesa : "0", 
+            referencia: p.puntoReferencia || p.referencia || "" 
+        },
+        direccion: p.direccion, 
+        productos: productosArray,
+        subtotal: Number(p.totalProductos || 0), 
+        costoDomicilio: Number(p.costoDomicilio || 0),
+        totalPagar: Number(p.totalPagar || 0), 
+        metodoPago: p.metodoPago,
+        observaciones: p.observaciones, 
+        ubicacion: p.ubicacionGoogleMaps || "",
+    };
+
+    localStorage.setItem("lastPedido", JSON.stringify(pedidoLocal));
+    window.open("facturalocal.html", "_blank");
+});
+          bloqueMes.appendChild(div);
+        });
+      contenedor.appendChild(bloqueMes);
+
+      headerMes.addEventListener("click", () => bloqueMes.classList.toggle("oculto"));
+    });
+
+  if (nuevosElementosHeader.length > 0) {
+    setTimeout(() => {
+      nuevosElementosHeader.forEach((header) => {
+        header.classList.remove("new");
+      });
+    }, 10000);
+  }
+}
+
+      async function eliminarPedidoAPI(rowIndex, numeroFactura) {
+        if (rowIndex <= 1) {
+          alert("Error: No se puede eliminar la fila de encabezado.");
+          return;
+        }
+
+        if (
+          !confirm(
+            `⚠️ ¿Estás seguro de que deseas ELIMINAR el pedido con FACTURA ${numeroFactura}?`
+          )
+        ) {
+          return;
+        }
+
+        const btn = document.querySelector(
+          `.boton-eliminar[data-row-index="${rowIndex}"]`
+        );
+        const elementoPedido = btn ? btn.closest(".pedido") : null;
+
+        const originalText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = "Eliminando...";
+
+        const urlDelete = `${API_URL}?action=delete&rowIndex=${rowIndex}`;
+
+        try {
+          const response = await fetch(urlDelete, { method: "GET" });
+          const data = await response.json();
+
+          if (data.status === "ok") {
+            // 1. Animación y remoción silenciosa (sin alertas de éxito)
+            if (elementoPedido) {
+              elementoPedido.style.transition = "all 0.5s ease";
+              elementoPedido.style.opacity = "0";
+              elementoPedido.style.transform = "translateX(20px)";
+
+              setTimeout(() => {
+                elementoPedido.remove();
+
+                // Actualizamos la memoria local
+                pedidosGlobal = pedidosGlobal.filter(
+                  (p) => p.rowIndex !== rowIndex
+                );
+
+                if (document.querySelectorAll(".pedido").length === 0) {
+                  contenedor.innerHTML =
+                    "<div class='cargando'>No hay registros.</div>";
+                }
+              }, 500);
+            }
+
+            // Limpieza de estados internos
+            ultimasFacturas.delete(numeroFactura.replace(/\\'/g, "'"));
+            facturasAbiertas.delete(numeroFactura.replace(/\\'/g, "'"));
+          } else {
+            throw new Error(data.message || "Error desconocido");
+          }
+        } catch (error) {
+          console.error("Error al eliminar:", error);
+          // Mantenemos esta alerta por seguridad técnica si el servidor falla
+          alert(
+            `❌ Error técnico: No se pudo eliminar la factura ${numeroFactura} en la base de datos.`
+          );
+          btn.disabled = false;
+          btn.textContent = originalText;
+        }
+      }
+
+function filtrarPedidos() {
+    const texto = document.getElementById("buscar").value.toLowerCase();
+    const fechaFiltro = document.getElementById("fechaFiltro").value;
+    
+    guardarEstadoPedidosAbiertos();
+
+    const filtrados = pedidosGlobal.filter((p) => {
+        const coincideTexto =
+            (p.nombre || "").toLowerCase().includes(texto) ||
+            (p.numeroFactura || "").toLowerCase().includes(texto);
+
+        let coincideFecha = true;
+        if (fechaFiltro && p.fecha) {
+            const partes = p.fecha.split("/");
+            if (partes.length === 3) {
+                const fechaPedido = `${partes[2]}-${partes[1].padStart(2, "0")}-${partes[0].padStart(2, "0")}`;
+                coincideFecha = fechaPedido === fechaFiltro;
+            } else {
+                coincideFecha = false;
+            }
+        }
+        return coincideTexto && coincideFecha;
+    });
+
+    // ⚡ NUEVA LÓGICA: Si el usuario está filtrando (por texto O por fecha), 
+    // forzamos a que los meses se abran para mostrar los resultados.
+    const forzarApertura = texto.length > 0 || fechaFiltro !== "";
+
+    mostrarPedidos(filtrados, [], forzarApertura);
+}
+      document
+        .getElementById("filtrarBtn")
+        .addEventListener("click", filtrarPedidos);
+      const recargarBtn = document.getElementById("recargarBtn");
+      recargarBtn.addEventListener("click", () => cargarPedidos(false));
+
+      function mostrarAvisoNuevoPedido() {
+        document.title = "¡Nuevo pedido!";
+        // No ocultamos el div de aviso aquí, solo cambiamos el título.
+        setTimeout(() => {
+          document.title = "Panel de Pedidos";
+        }, 3000);
+      }
+
+      avisoPedidosNuevos.onclick = function () {
+        this.style.display = "none";
+        this.classList.remove("active-pulse");
+
+        // Sincronizamos las facturas conocidas
+        const facturasActuales = pedidosGlobal
+          .map((p) => p.numeroFactura)
+          .filter((f) => f);
+        ultimasFacturas = new Set(facturasActuales);
+
+        // Renderizamos resaltando los pedidos nuevos detectados
+        guardarEstadoPedidosAbiertos();
+        mostrarPedidos(pedidosGlobal, facturasNuevasTemporales);
+
+        // Limpiamos estados
+        facturasNuevasTemporales = [];
+        cantidadNuevosAnterior = 0;
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+
+      // --- NUEVO: Búsqueda en tiempo real ---
+      document.getElementById("buscar").addEventListener("input", function () {
+        filtrarPedidos();
+      });
+
+      // También para la fecha, para que al cambiarla filtre de una vez
+      document
+        .getElementById("fechaFiltro")
+        .addEventListener("change", function () {
+          filtrarPedidos();
+        });
+
+      fetch("../config.json")
+        .then((r) => r.json())
+        .then((cfg) => {
+          API_URL = cfg.apiUrls.reciboBaseDatos || cfg.apiUrls.envioBaseDatos;
+
+          // 1. Carga inicial de pedidos
+          cargarPedidos();
+
+          // 2. ⏳ Auto-actualización cada 3 segundos
+          // Se llama a cargarPedidos(true) para indicar que es una llamada automática
+          // y se usará la lógica de detección y aviso.
+          setInterval(() => cargarPedidos(true), 3000); // 3000 ms = 3 segundos
+        })
+        .catch((err) => {
+          console.error("❌ Error cargando config.json:", err);
+          // alert("Error al cargar configuración de la API."); // Alerta alternativa
+        });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,44 @@
+{
+    "tituloPagina": "Pide en Mi Tienda a domicilio | Restaurante | Ordena online",
+    "nombreRestaurante": "Mi Tienda",
+    "logo": "img/icono_tienda.png",
+    "colores": {
+        "--bg-body": "Url('img/fondobody.png') no-repeat center center / cover",
+        "--header": "linear-gradient(135deg, rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('img/fondoheader.png')",
+        "--accent": "#333",
+        "--bg-skeleton": "linear-gradient(135deg, #f9f9f9, #e9e9e9)",
+        "--bg-start": "#333",
+        "--bg-end": "#444",
+        "--card-bg": "#222"
+    },
+    "redes": {
+        "whatsapp": "https://wa.me/573024345404",
+        "instagram": "https://www.instagram.com/",
+        "facebook": "https://www.facebook.com/"
+    },
+    "numeroWhatsAppMensajes": "573024345404",
+    "footerQR": "img/QR_tienda.png",
+    "sede": {
+        "nombre": "Mi Tienda - Cartagena, Bolivar.",
+        "direccion": "Direccion, mi ciudad, mi pais",
+        "telefono": "(+57) 302 434 5404"
+    },
+    "coordenadasSede": [
+        10.393235,
+        -75.483182
+    ],
+    "footerLogo": "img/logo.png",
+    "domicilio": {
+        "tarifaMinima": 3000,
+        "costoPorKilometro": 1500,
+        "recargoNocturnoActivo": true
+    },
+    "crearTienda": "https://wa.me/573022666530?text=Quiero%20crear%20mi%20tienda",
+    "apiUrls": {
+        "productos": "https://script.google.com/macros/s/AKfycby3ptoFA8EAibDdxaevgVOPz7Iskjd8xqp28tTt_C5te1rohPqDRO_iidgZNmjQNFG8CA/exec",
+        "horario": "https://script.google.com/macros/s/AKfycbyh1fiaRLBPytJJ_SYszp2bq7CejEbGtS-BDtf_4KGbUnasIcLx7-nO_GP1VJHvB6GBew/exec",
+        "envioBaseDatos": "https://script.google.com/macros/s/AKfycbzauzYzsKvnVrvEZ4UX8T0qIRhNu86AH5VpeMcXKyOmL4QeR5tDKQOhuFdhAdtFAvu0/exec",
+        "reciboBaseDatos": "https://script.google.com/macros/s/AKfycbzauzYzsKvnVrvEZ4UX8T0qIRhNu86AH5VpeMcXKyOmL4QeR5tDKQOhuFdhAdtFAvu0/exec",
+        "CajaDatos": "https://script.google.com/macros/s/AKfycbwgm_oupRGyMz5d4Y8FG8x-MKSzmre0ZTmGjV2TkIeD3Y1b5nRyZZsYqItBONCLuY0N/exec"
+    }
+}

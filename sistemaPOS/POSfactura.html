@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title></title>
+
+    <style>
+        /* ⚠️ Estilos Críticos para POS 58mm (VISUALIZACIÓN Y IMPRESIÓN) */
+        body {
+            /* Permitir que el body ocupe el ancho completo para centrar el ticket */
+            width: 100%;
+            font-family: monospace, sans-serif;
+            /* Fuente simple para mejor impresión térmica */
+            font-size: 10px;
+            /* TAMAÑO DE FUENTE BASE AUMENTADO (10px) */
+            margin: 0;
+            padding: 0;
+            color: #000;
+            /* Fondo gris claro para que el ticket blanco resalte en el centro */
+            background: #f0f0f0;
+        }
+
+        .page {
+            /* Ancho y márgenes para simular el ticket y CENTRARLO */
+            width: 58mm;
+            max-width: 58mm;
+            background: #fff;
+            /* Fondo blanco del ticket */
+            margin: 20px auto;
+            /* ESTO CENTRA EL TICKET EN PANTALLA */
+            padding: 5px 3px;
+            /* Mínimo padding horizontal */
+            box-sizing: border-box;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            /* Ligera sombra para separar del fondo web */
+        }
+
+        /* ==== ENCABEZADO Y TÍTULOS ==== */
+        .header-column {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        /* NUEVO: ESTILOS PARA EL LOGO */
+        .header-column .logo {
+            height: auto;
+            /* Permitir que ocupe espacio */
+            width: 100%;
+            /* Ocupar el ancho disponible para centrar */
+            margin-bottom: 5px;
+            /* Pequeño margen debajo del logo */
+            overflow: visible;
+        }
+
+        .header-column .logo img {
+            width: 40px;
+            /* Tamaño del logo (ajustar según necesidad) */
+            height: auto;
+            /* Mantener proporción */
+            filter: grayscale(100%);
+            /* CONVERTIR A BLANCO Y NEGRO */
+            display: block;
+            /* Para que margin: auto funcione */
+            margin: 0 auto;
+            /* Centrar el logo */
+        }
+
+        .store-info h2 {
+            margin: 0;
+            font-size: 14px;
+            /* Título de la tienda GRANDE */
+            font-weight: 900;
+        }
+
+        .store-info p {
+            margin: 0;
+            font-size: 9px;
+            /* Dirección y Teléfono */
+            line-height: 1.1;
+        }
+
+        .factura-info {
+            margin-top: 5px;
+            padding: 0;
+            text-align: center;
+        }
+
+        .factura-info span {
+            font-size: 10px;
+        }
+
+        #factura-num {
+            font-size: 16px !important;
+            /* NÚMERO DE FACTURA ENORME */
+            font-weight: 900;
+            margin-top: 2px;
+        }
+
+        /* ==== META (Cliente/Fecha) ==== */
+        .meta {
+            font-size: 10px;
+            line-height: 1.3;
+            margin-bottom: 8px;
+            padding-top: 5px;
+            font-weight: 700;
+        }
+
+        .meta div {
+            margin: 0;
+            padding: 0;
+        }
+
+
+        /* ==== LÍNEA DIVISORA (CRÍTICA) ==== */
+        hr {
+            border: none;
+            border-top: 1px dashed #000;
+            /* Línea de puntos clara */
+            margin: 6px 0;
+        }
+
+        /* ==== TABLA (Productos) - Maximizando fuentes sin desbordar 4 columnas ==== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            table-layout: fixed;
+        }
+
+        th {
+            text-align: left;
+            padding: 3px 0;
+            font-weight: 900;
+            border-bottom: 2px solid #000;
+            /* Línea separadora gruesa */
+        }
+
+        /* Anchos de columna balanceados para que el producto quepa lo mejor posible */
+        #items-table thead tr th:first-child {
+            width: 45%;
+            text-align: left;
+        }
+
+        /* Producto */
+        #items-table thead tr th.qty {
+            width: 10%;
+            text-align: center;
+        }
+
+        /* Cantidad */
+        #items-table thead tr th.price {
+            width: 20%;
+            text-align: right;
+        }
+
+        /* Precio Unitario */
+        #items-table thead tr th.total {
+            width: 25%;
+            text-align: right;
+        }
+
+        /* Total */
+
+        td {
+            padding: 3px 0;
+            line-height: 1.3;
+        }
+
+        td strong {
+            font-size: 11px;
+            /* NOMBRE DEL PRODUCTO MÁS GRANDE */
+            font-weight: 900;
+        }
+
+        td small {
+            display: block;
+            font-size: 8px;
+            /* Instrucciones pequeñas para ahorrar espacio vertical */
+            color: #000 !important;
+            /* Fuerza el color negro para máxima legibilidad */
+            margin-top: 1px;
+        }
+
+        /* Alineaciones y visibilidad de números */
+        td.qty {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        td.price {
+            text-align: right;
+            font-size: 10px;
+        }
+
+        td.total {
+            text-align: right;
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+
+        /* ==== TOTALES ==== */
+        .totals {
+            margin-top: 5px;
+            padding: 0;
+        }
+
+        .totals .row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            /* Letra grande para sub-totales */
+            line-height: 1.4;
+        }
+
+        .totals .row div:last-child {
+            font-weight: 900;
+        }
+
+        .totals .row.total {
+            font-weight: 900;
+            border-top: 1px dashed #000;
+            margin-top: 6px;
+            padding-top: 6px;
+            font-size: 16px;
+            /* Tamaño por defecto ENORME para las filas .total */
+        }
+
+        /* REGLA SOLICITADA: Total sin propina más pequeño (9px) */
+        .totals .row.total:not(#total-final-row) {
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        /* ESTILO: TOTAL A PAGAR (Grande, 16px) - El ID tiene más prioridad que el selector anterior */
+        .totals .row#total-final-row {
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+        /* Método de pago se destaca con fuente grande */
+        #metodo-pago-row {
+            align-items: center;
+            font-size: 12px;
+            line-height: 1.5;
+            font-weight: 900;
+        }
+
+        /* ==== OBSERVACIONES Y FOOTER ==== */
+        .observaciones {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        /* Estilos para el contenedor del QR (Centrado en ticket) */
+        .qr-container {
+            /* CAMBIO AQUÍ: Usamos la clase explícita */
+            text-align: center;
+            /* Centra el contenido (texto y QR como inline) */
+            margin-top: 10px;
+            padding-top: 5px;
+            border-top: 1px dashed #000;
+        }
+
+        /* Y sus descendientes: */
+        .qr-container p:first-child {
+            /* CAMBIO AQUÍ */
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .qr-container img {
+            /* CAMBIO AQUÍ */
+            /* Tamaño del QR se mantiene pequeño (80px) para no desbordar */
+            width: 50% !important;
+            height: auto !important;
+            /* FIX: Asegurar que la imagen se centre correctamente */
+            display: block;
+            /* Tratar la imagen como un bloque */
+            margin: 3px auto;
+            /* Centrar con márgenes automáticos */
+        }
+
+        .qr-container p:last-child {
+            /* CAMBIO AQUÍ */
+            margin-top: 10px;
+            padding: 0;
+            line-height: 1.1;
+            font-size: 8px;
+            word-break: break-all;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 9px;
+            line-height: 1.2;
+        }
+
+        /* ESTILOS PARA QUE LOS BOTONES SE VEAN EN EL NAVEGADOR */
+        .print-actions {
+            text-align: center;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px dashed #ccc;
+            /* Separador visual en web */
+            display: block !important;
+        }
+
+        .print-actions button {
+            padding: 5px 10px;
+            margin: 5px;
+            font-size: 10px;
+            /* Reducido para que quepa bien en el 58mm simulado */
+            cursor: pointer;
+            border: 1px solid #000;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+
+        .print-actions #btn-print {
+            background: #e6ffec;
+            color: #007c1f;
+            border-color: #007c1f;
+        }
+
+        .print-actions #btn-close {
+            width: 90%;
+            background: #ffe6e6;
+            color: #cc0000;
+            border-color: #cc0000;
+        }
+
+        /* Estilos para el contenedor del QR (Centrado en ticket) */
+        .footer+div {
+            text-align: center;
+            /* Centra el contenido (texto y QR como inline) */
+            margin-top: 10px;
+            padding-top: 5px;
+            border-top: 1px dashed #000;
+        }
+
+        .footer+div p:first-child {
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .footer+div img {
+            /* Tamaño del QR se mantiene pequeño (80px) para no desbordar */
+            width: 80px !important;
+            height: 80px !important;
+            /* FIX: Asegurar que la imagen se centre correctamente */
+            display: block;
+            /* Tratar la imagen como un bloque */
+            margin: 3px auto;
+            /* Centrar con márgenes automáticos */
+        }
+
+        .footer+div p:last-child {
+            margin: 0;
+            padding: 0;
+            line-height: 1.1;
+            font-size: 8px;
+            word-break: break-all;
+        }
+
+
+        /* Media Query de impresión final (Asegura la impresión 58mm sin fondo gris) */
+        @media print {
+            body {
+                background: #fff !important;
+                /* Sin fondo en impresión */
+                width: 58mm;
+                max-width: 58mm;
+            }
+
+            .page {
+                margin: 0;
+                /* Ocupa todo el espacio de impresión */
+                box-shadow: none;
+                padding: 5px 3px;
+            }
+
+            /* REGLA CRÍTICA: Oculta los botones solo al imprimir */
+            .print-actions {
+                display: none !important;
+            }
+
+            * {
+                color: #000 !important;
+                background: #fff !important;
+            }
+        }
+    </style>
+
+
+
+</head>
+<!-- Librerías para generar PDF desde HTML -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
+<body>
+    <div class="page" id="page">
+
+        <div class="logo-container" style="text-align: center; width: 100%; margin-top: 5px;margin-bottom: 10px;">
+            <img src="../img/logoimpresora.png" alt="Logo" class="thermal-logo" style=" width: 100%; max-width: 52mm; height: auto; display: block; margin: 0 auto; mage-rendering: crisp-edges;">
+        </div>
+
+        <header class="header-column">
+            <div class="store-info">
+                <h2 id="store-name"></h2>
+                <p id="store-address"></p>
+                <p id="store-phone"></p>
+            </div>
+
+            <div class="factura-info">
+                <span>FACTURA N°</span>
+                <div id="factura-num"></div>
+            </div>
+        </header>
+
+        <hr />
+
+        <div class="meta">
+            <div class="left">
+                <span id="cliente-nombre">Cliente: ---</span><br>
+                <span id="cliente-phone">Tel: ---</span><br>
+                <span id="cliente-direccion">Dirección: ---</span><br>
+                <span id="cliente-referencia">Ref: ---</span>
+                <div id="fecha">Fecha: --</div>
+                <div id="hora">Hora: --</div>
+                <div id="tipo-entrega">Tipo: --</div>
+            </div>
+        </div>
+
+        <hr />
+
+        <table id="items-table">
+            <thead>
+                <tr>
+                    <th>PRODUCTO</th>
+                    <th class="qty">CANT</th>
+                    <th class="price">PRECIO</th>
+                    <th class="total">TOTAL</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <hr />
+
+        <div class="totals">
+            <div class="row">
+                <div>Subtotal</div>
+                <div id="subtotal">$0</div>
+            </div>
+            <div class="row">
+                <div>Domicilio</div>
+                <div id="costo-domicilio">$0</div>
+            </div>
+            <div class="row total">
+                <div>Total sin propina</div>
+                <div id="total-sin-propina"><strong>$0</strong></div>
+            </div>
+            <div class="row">
+                <div>Propina 10% (Opcional)</div>
+                <div id="propina">$0</div>
+            </div>
+            <div class="row total" id="total-final-row">
+                <div>TOTAL A PAGAR</div>
+                <div id="total-pagar">$0</div>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="totals">
+            <div class="row" id="metodo-pago-row">
+                <div><strong>MÉTODO DE PAGO</strong></div>
+                <div><strong>—</strong></div>
+            </div>
+        </div>
+
+        <hr />
+
+
+        <div class="observaciones">
+            <strong>OBSERVACIONES:</strong>
+            <div id="obs-text">—</div>
+        </div>
+
+        <div class="footer">
+            <div>!GRACIAS POR SU COMPRA!</div>
+            <div>Documento no fiscal, Solo para uso interno.</div>
+        </div>
+
+        <div class="print-actions">
+            <button id="btn-print">🖨️ Imprimir</button>
+            <button id="btn-savepdf">💾 Guardar PDF</button>
+            <button id="btn-share">🔗 Compartir</button>
+            <button id="btn-close">✖ Cerrar</button>
+        </div>
+    </div>
+
+
+
+    <script>
+
+        // 1. Carga de configuración (Logo y datos de la sede)
+        fetch("../config.json")
+            .then(res => res.json())
+            .then(data => {
+                const sede = data.sede || {};
+                document.getElementById("store-name").textContent = sede.nombre || "—";
+                document.getElementById("store-address").textContent = sede.direccion || "—";
+                document.getElementById("store-phone").textContent = "Tel: " + (sede.telefono || "—");
+                if (sede.logoUrl) document.getElementById("store-logo").src = sede.logoUrl;
+            })
+            .catch(err => console.warn("Error cargando config.json:", err));
+
+        (function () {
+            // 2. Leer los datos enviados por POS.js
+            const rawPOS = localStorage.getItem('datosFacturaPOS');
+            if (!rawPOS) {
+                console.error("No se encontraron datos en datosFacturaPOS");
+                return;
+            }
+
+            const d = JSON.parse(rawPOS);
+
+            // ESTA ALERTA TE DIRÁ SI LLEGAN PRODUCTOS O NO
+            if (!d.itemsPedido || d.itemsPedido.length === 0) {
+                alert("¡OJO! El POS no envió ningún producto en la lista 'itemsPedido'");
+            }
+            const formato = n => '$' + Number(n || 0).toLocaleString('es-CO');
+
+            // 3. Llenar la Cabecera (Datos del Cliente y Pedido)
+            document.getElementById('factura-num').textContent = (d.pedido.numero || '—').toUpperCase();
+            document.getElementById('cliente-nombre').textContent = `Cliente: ${d.cliente.nombre}`;
+            document.getElementById('cliente-phone').textContent = `Tel: ${d.cliente.telefono}`;
+            document.getElementById('cliente-direccion').textContent = `Dirección: ${d.cliente.direccion}`;
+            const refEl = document.getElementById('cliente-referencia');
+            if (d.cliente.referencia) {
+                refEl.textContent = `Ref: ${d.cliente.referencia}`;
+                refEl.style.display = 'inline'; // Asegura que se vea
+            } else {
+                refEl.style.display = 'none';    // Lo oculta si viene vacío
+            }
+            document.getElementById('fecha').textContent = `Fecha: ${d.pedido.fecha}`;
+            document.getElementById('hora').textContent = `Hora: ${d.pedido.hora}`;
+            document.getElementById('tipo-entrega').textContent = `Tipo: ${d.pedido.entrega}`;
+
+            // --- LÓGICA CORREGIDA PARA LA MESA ---
+            // Solo entra si el tipo es exactamente "Mesa"
+            if (d.pedido.entrega === "Mesa") {
+                // Verificamos que el valor exista (puede ser 0)
+                if (d.pedido.mesa !== undefined && d.pedido.mesa !== null && d.pedido.mesa !== "") {
+                    const mesaEl = document.createElement("div");
+                    mesaEl.style.fontWeight = "bold";
+                    mesaEl.textContent = `Mesa: ${d.pedido.mesa}`;
+
+                    const leftPanel = document.querySelector(".meta .left");
+                    if (leftPanel) {
+                        leftPanel.appendChild(mesaEl);
+                    }
+                }
+            }
+
+            document.getElementById('btn-print').addEventListener('click', () => window.print());
+            document.getElementById('btn-close').addEventListener('click', () => {
+                localStorage.removeItem('lastPedido');
+                // Intenta cerrar la pestaña actual
+                window.close();
+                // Si no se puede cerrar (por restricciones del navegador), redirige a POS.html en la misma pestaña
+                setTimeout(() => {
+                    window.location.replace('POS.html');
+                }, 200);
+            });
+
+            // Guardar PDF: captura el elemento #page y genera un PDF sin los botones
+            document.getElementById('btn-savepdf').addEventListener('click', async () => {
+                const res = await generateInvoicePdfBlob();
+                if (res && res.blob && res.filename) {
+                    const url = URL.createObjectURL(res.blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = res.filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    setTimeout(() => URL.revokeObjectURL(url), 60000);
+                }
+            });
+
+            // Compartir PDF: intentamos Web Share API con archivos y fallback
+            document.getElementById('btn-share').addEventListener('click', async () => {
+                await shareInvoicePdf();
+            });
+
+            // 4. EL MOTOR DE LA TABLA: Insertar los productos
+            const tbody = document.querySelector('#items-table tbody');
+            tbody.innerHTML = ''; // Limpiar tabla por si acaso
+
+            if (d.itemsPedido && d.itemsPedido.length > 0) {
+                d.itemsPedido.forEach(p => {
+                    const tr = document.createElement('tr');
+                    // Calculamos el total de esta línea
+                    const totalLinea = (p.precio || 0) * (p.cantidad || 1);
+
+                    tr.innerHTML = `
+    <td>
+        <strong>${p.nombre}</strong><br>
+        ${p.instrucciones ? `<small style="color: #444;">${p.instrucciones}</small>` : ''}
+    </td>
+    <td class="qty">${p.cantidad}</td>
+    <td class="price">${formato(p.precio)}</td>
+    <td class="total">${formato(p.precio * p.cantidad)}</td>
+`;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // 5. Llenar los Totales finales
+            const subtotal = Number(d.resumen?.subtotal || 0); // Esto ya viene sumado del POS ($50.000 si son 2 de 25)
+            const costoDom = Number(d.costoDom || 0);
+
+            // La base es lo que paga el cliente antes de propina
+            const totalSinPropina = subtotal + costoDom;
+
+            // Calculamos la propina sobre el total (Ej: 38.600 -> 3.860)
+            const propina = Math.round(totalSinPropina * 0.10);
+            const totalPagar = totalSinPropina + propina;
+
+            document.getElementById('subtotal').textContent = formato(subtotal);
+            document.getElementById('costo-domicilio').textContent = formato(costoDom);
+            document.getElementById('total-sin-propina').textContent = formato(totalSinPropina);
+            document.getElementById('propina').textContent = formato(propina);
+            document.getElementById('total-pagar').textContent = formato(totalPagar);
+
+            document.getElementById('obs-text').textContent = d.observaciones || '';
+
+            // Mostrar la fila de propina
+            const propinaRow = document.getElementById('propina')?.parentElement;
+            if (propinaRow) propinaRow.style.display = 'flex';
+
+            // --- NUEVO: Mostrar Método de Pago ---
+            // Buscamos el elemento donde va el valor del método de pago
+            const metodoPagoValor = document.getElementById('metodo-pago-valor');
+            if (metodoPagoValor) {
+                // d.pedido.metodo es el dato que enviamos desde POS.js
+                metodoPagoValor.innerHTML = `<strong>${d.pedido.metodo || '—'}</strong>`;
+            } else {
+                // Si no tienes el ID, lo buscamos por la estructura de la fila
+                const metodoRow = document.getElementById('metodo-pago-row');
+                if (metodoRow) {
+                    const valorDiv = metodoRow.querySelector('div:last-child');
+                    if (valorDiv) valorDiv.innerHTML = `<strong>${d.pedido.metodo || '—'}</strong>`;
+                }
+            }
+
+            // 6. Generar QR si es Domicilio
+            if (d.pedido.entrega === "Domicilio" && d.ubicacionGoogleMaps) {
+                const qrContainer = document.createElement("div");
+                qrContainer.className = "qr-container";
+                qrContainer.style.textAlign = "center";
+                qrContainer.style.marginTop = "10px";
+
+                qrContainer.innerHTML = `
+            <p style="font-size:10px; font-weight:700;">ESCANEA PARA UBICACIÓN (DOMICILIO)</p>
+            
+            <img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(d.ubicacionGoogleMaps)}&size=100x100&margin=0&qzone=1" >
+            
+            <p href="${d.ubicacionGoogleMaps}" target="_blank" 
+               style="    margin-top: 10px;padding: 0; line-height: 1.1;font-size: 8px; word-break: break-all;">
+               ${d.ubicacionGoogleMaps}
+            </p>
+        `;
+
+                // Lo insertamos antes del footer
+                const footer = document.querySelector(".footer");
+                if (footer) {
+                    footer.before(qrContainer);
+                }
+            }
+
+
+        })();
+        // Generar PDF y devolver { blob, filename }
+        async function generateInvoicePdfBlob() {
+            const pageEl = document.getElementById('page');
+            const actions = document.querySelector('.print-actions');
+
+            // Eliminar temporalmente los botones del DOM antes de capturar
+            let actionsParent = null;
+            let actionsPlaceholder = null;
+            if (actions && actions.parentNode) {
+                actionsParent = actions.parentNode;
+                actionsPlaceholder = document.createComment('print-actions-placeholder');
+                actionsParent.replaceChild(actionsPlaceholder, actions);
+            }
+
+            // Pequeña espera para que el DOM se actualice
+            await new Promise(r => setTimeout(r, 150));
+
+            // Capturar con html2canvas
+            const canvas = await html2canvas(pageEl, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                logging: false
+            });
+
+            // Restaurar el nodo de botones al DOM después de capturar
+            if (actions && actionsParent && actionsPlaceholder) {
+                actionsParent.replaceChild(actions, actionsPlaceholder);
+            }
+
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+
+            // Convertir px -> mm (asumiendo 96 DPI)
+            const pxToMm = 25.4 / 96;
+            const imgWidthMm = canvas.width * pxToMm;
+            const imgHeightMm = canvas.height * pxToMm;
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ unit: 'mm', format: [imgWidthMm, imgHeightMm] });
+            pdf.addImage(imgData, 'JPEG', 0, 0, imgWidthMm, imgHeightMm, undefined, 'FAST');
+
+            const factura = document.getElementById('factura-num').textContent || 'factura';
+            const fecha = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+            const filename = `${factura}_${fecha}.pdf`;
+
+            // Generar blob
+            const blob = pdf.output('blob');
+            return { blob, filename };
+        }
+
+        // Compartir factura: intenta Web Share API con archivos. Fallback a descarga + WhatsApp web.
+        async function shareInvoicePdf() {
+            try {
+                const res = await generateInvoicePdfBlob();
+                if (!res || !res.blob) return;
+
+                const factura = document.getElementById('factura-num').textContent || '';
+                const file = new File([res.blob], res.filename, { type: 'application/pdf' });
+
+                // Web Share API con archivos (móviles modernos)
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({ files: [file], title: `Factura ${factura}`, text: `Factura Nº ${factura}` });
+                        return;
+                    } catch (err) {
+                        console.warn('Error en navigator.share:', err);
+                        // continuar al fallback
+                    }
+                }
+
+                // Fallback: descargar el PDF automáticamente
+                const url = URL.createObjectURL(res.blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = res.filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 60000);
+
+                // Intentar abrir WhatsApp Web con mensaje prellenado al número del cliente (si existe)
+                let datos = {};
+                try { datos = JSON.parse(localStorage.getItem('datosFacturaPOS') || '{}'); } catch (e) { datos = {}; }
+                const telefono = (datos.cliente && datos.cliente.telefono) ? String(datos.cliente.telefono).replace(/\D/g, '') : '';
+                const msg = `Factura Nº ${factura} - Te envío el PDF de tu compra.`;
+
+                if (telefono) {
+                    const waUrl = `https://wa.me/${telefono}?text=${encodeURIComponent(msg)}`;
+                    window.open(waUrl, '_blank');
+                } else {
+                    alert('PDF descargado. Ahora puedes compartirlo con el cliente (no se encontró número de teléfono).');
+                }
+
+            } catch (e) {
+                console.error('Error al generar/compartir PDF:', e);
+                alert('Ocurrió un error al generar o compartir el PDF.');
+            }
+        }
+    </script>
+    <script src="../config-loader.js"></script>
+</body>
+
+
+</html>

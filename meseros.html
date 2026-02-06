@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Meseros Pro | Mr. George</title>
+    <style>
+        :root {
+            --accent: #ffc400;
+            --bg-dark: #000;
+            --card-bg: #111;
+            --border: #222;
+            --text-main: #eee;
+            --step-inactive: #333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background: #000;
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+
+
+        /* LINEA DE PROCESO */
+        .process-stepper {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #080808;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            z-index: 1001;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            flex: 1;
+            position: relative;
+        }
+
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--step-inactive);
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .step-label {
+            font-size: 0.6rem;
+            font-weight: bold;
+            color: #555;
+            text-transform: uppercase;
+        }
+
+        .step.active .step-dot {
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .step.active .step-label {
+            color: var(--accent);
+        }
+
+        .step-line {
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: var(--step-inactive);
+            z-index: -1;
+        }
+
+        .step:last-child .step-line {
+            display: none;
+        }
+
+        /* GRID PRINCIPAL */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 5% 40% 25% 30%;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .col {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        /* COL 1: NAVEGACION */
+        .sidebar-main {
+            background: #080808;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .nav-link {
+            width: 100%;
+            padding: 30px 8px;
+            background: none;
+            border: none;
+            color: #444;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: color 0.3s, background-color 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link.active {
+            color: #fff;
+            background: var(--accent);
+            border: none;
+            box-shadow: 0 0 15px rgba(255, 196, 0, 0.3);
+        }
+
+        .nav-link i {
+            display: block;
+            font-size: 2rem;
+            margin-bottom: 0;
+            font-style: normal;
+        }
+
+        /* VISTAS DINÁMICAS (Mesas / Pedidos) */
+        .view-overlay {
+            display: none;
+            flex-direction: column;
+            background: #000;
+            flex: 1;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .view-overlay.active {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        .data-card {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            font-weight: bold;
+            background: var(--accent);
+            color: #000;
+        }
+
+        /* SERVICIO, CARTA Y COMANDA (ESTILOS ORIGINALES) */
+        .service-sidebar {
+            background: #0d0d0d;
+            padding: 15px;
+        }
+
+        .btn-method {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background: #1a1a1a;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-method.active {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+        }
+
+        .dynamic-fields {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .input-pro {
+            width: 100%;
+            padding: 12px;
+            background: #000;
+            border: 1px solid #333;
+            color: #fff;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        /* Inputs compactos: mismo estilo y tamaño reducido para nombre, teléfono y mesa */
+        .input-compact {
+            padding: 8px;
+            font-size: 0.85rem;
+            height: 36px;
+            border-radius: 6px;
+        }
+
+        .input-mesa {
+            padding: 8px;
+            font-size: 0.85rem;
+            height: 36px;
+            border-radius: 6px;
+        }
+
+        .catalog-container {
+            display: flex;
+            flex-direction: column;
+            background: #000;
+        }
+
+        .catalog-split {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .cat-list-vertical {
+            background: #050505;
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+        }
+
+        .cat-btn {
+            padding: 15px 5px;
+            width: 100%;
+            border: none;
+            background: none;
+            color: #555;
+            font-size: 0.65rem;
+            font-weight: 700;
+            cursor: pointer;
+            border-bottom: 1px solid #111;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .cat-btn.active {
+            background: #111;
+            color: var(--accent);
+            border-right: 3px solid var(--accent);
+        }
+
+        .grid-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .card-prod {
+            background: var(--card-bg);
+            padding: 8px;
+            border-radius: 10px;
+            border: 1px solid #222;
+            cursor: pointer;
+        }
+
+        .card-prod h4 {
+            color: var(--accent);
+            font-size: 0.9rem;
+        }
+
+        .order-panel {
+            background: #fff;
+            color: #000;
+        }
+
+        .order-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 10px;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+
+        .qty {
+            background: #000;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-right: 5px;
+        }
+
+        .order-footer {
+            padding: 8px;
+            background: #f0f0f0;
+            border-top: 1px solid #ddd;
+        }
+
+        .order-footer .order-method {
+            margin-bottom: 8px;
+        }
+
+        .order-footer .order-total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.05rem;
+            font-weight: 900;
+            margin-bottom: 8px;
+            color: #000;
+            align-items: center;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            background: #27ae60;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .btn-action:active { transform: translateY(1px); }
+
+        /* TABS MÓVIL */
+        .tab-bar {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 65px;
+            background: rgba(0, 0, 0, 0.85);
+            /* Negro con transparencia */
+            backdrop-filter: blur(10px);
+            /* Desenfoque de fondo */
+            -webkit-backdrop-filter: blur(10px);
+            grid-template-columns: repeat(3, 1fr);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 2000;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            /* Gris suave para inactivos */
+            transition: 0.3s;
+            cursor: pointer;
+            font-size: 0.65rem;
+            gap: 2px;
+            font-size: 15px;
+        }
+
+        .tab-item i {
+            font-size: 1.3rem;
+            font-style: normal;
+            margin-bottom: 2px;
+            transition: 0.3s;
+        }
+
+
+        @media (max-width: 1000px) {
+            .main-grid {
+                grid-template-columns: 70px 1fr;
+            }
+
+            .col {
+                display: none;
+            }
+
+            .col.active-m {
+                display: flex !important;
+            }
+
+            /* Mostrar siempre la sidebar (m-col-1) en móvil; el servicio (m-col-2)
+               se mostrará sólo si tiene la clase active-m */
+            #m-col-1 {
+                display: flex !important;
+            }
+
+            .tab-bar {
+                display: grid;
+            }
+
+            /* Ajustes de estilo para móvil */
+            .sidebar-main {
+                padding: 10px 0;
+            }
+
+            /* Fijar ancho de la barra lateral en móvil para que no ocupe toda la pantalla */
+            .sidebar-main {
+                min-width: 70px;
+                max-width: 70px;
+            }
+
+            .nav-link {
+                padding: 20px 5px;
+                font-size: 0.6rem;
+            }
+
+            .nav-link i {
+                font-size: 1.5rem;
+                margin-bottom: 5px;
+            }
+
+            .service-sidebar {
+                padding: 12px;
+            }
+
+            .btn-method {
+                padding: 12px;
+                margin-bottom: 8px;
+                font-size: 0.75rem;
+            }
+
+            .dynamic-fields {
+                gap: 10px;
+            }
+
+            .input-pro {
+                padding: 10px;
+                font-size: 0.8rem;
+            }
+
+            .input-mesa {
+                font-size: 0.8rem;
+            }
+
+            /* En móvil, cuando mesas-expanded está activo, mostrar col 1 y col 2 juntas */
+            .main-grid.mesas-expanded {
+                grid-template-columns: 70px 1fr;
+            }
+
+            .main-grid.mesas-expanded #m-col-1,
+            .main-grid.mesas-expanded #m-col-2 {
+                display: flex;
+            }
+
+            .main-grid.mesas-expanded #m-col-3,
+            .main-grid.mesas-expanded #m-col-4 {
+                display: none;
+            }
+
+            .cat-list-vertical {
+                padding-bottom: 80px;
+            }
+
+            .grid-items{
+                padding-bottom: 80px;
+            }
+
+            .order-footer{
+                padding-bottom: 80px;
+            }
+        }
+
+        /* Estilos para los nuevos controles de la comanda */
+        .item-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .btn-qty {
+            background: #000;
+            color: #fff;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-qty:active {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .btn-trash {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.3rem;
+            margin-left: auto;
+        }
+
+        .btn-empty-cart {
+            width: 100%;
+            background: #ffeded;
+            color: #d63031;
+            border: 1px solid #fab1a0;
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .btn-empty-cart:hover {
+            background: #d63031;
+            color: #fff;
+        }
+
+        .note-line {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            width: 100%;
+        }
+
+        /* ESTILOS PARA LÍNEAS DE CARRITO */
+        .cart-item-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            padding: 6px 0;
+            border-top: 1px solid #e0e0e0;
+            font-size: 0.85rem;
+            transition: background-color 0.2s;
+        }
+
+        .cart-item-line:hover {
+            background-color: #f9f9f9;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #000;
+        }
+
+        .cart-item-edit {
+            cursor: pointer;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+        }
+
+        .cart-item-edit:hover {
+            transform: scale(1.15);
+        }
+
+        .cart-item-price {
+            font-weight: bold;
+            flex-shrink: 0;
+            min-width: 65px;
+            text-align: center;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .cart-item-btn-qty {
+            background: #000;
+            color: #fff;
+            border: none;
+            width: 20px;
+            height: 20px;
+            font-size: 0.75rem;
+            padding: 0;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .cart-item-btn-qty:active {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .cart-item-qty {
+            font-weight: bold;
+            min-width: 10px;
+            text-align: center;
+            font-size: 0.75rem;
+        }
+
+        .cart-item-trash {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+            padding: 0;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+        }
+
+        .cart-item-trash:hover {
+            transform: scale(1.2);
+        }
+
+        .cart-item-note {
+            font-size: 0.65rem;
+            color: #d35400;
+            font-style: italic;
+            margin-left: 5px;
+            margin-top: 2px;
+            padding-left: 8px;
+            border-left: 2px solid #d35400;
+        }
+
+
+
+        /* Contenedor de descripción con truncado a 2 líneas */
+        .prod-desc-container {
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: #888;
+            position: relative;
+        }
+
+        .prod-desc-text {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            /* Límite inicial de 2 líneas */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Estado expandido */
+        .card-prod.expanded .prod-desc-text {
+            -webkit-line-clamp: unset;
+            /* Muestra todo el texto */
+            display: block;
+        }
+
+        /* Icono de flecha interactivo */
+        .expand-icon {
+            display: inline-block;
+            float: right;
+            transition: transform 0.3s ease;
+            font-size: 0.8rem;
+            color: var(--accent);
+        }
+
+        .card-prod.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Evitar que el click en la descripción dispare el 'add' al carrito si solo se quiere leer */
+        .btn-toggle-desc {
+            background: none;
+            border: none;
+            padding: 5px 0;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+        }
+
+
+        /* Estilo para la tarjeta agotada */
+        .card-prod.agotado {
+            opacity: 0.6;
+            filter: grayscale(0.8);
+            border: 1px dashed #444 !important;
+            pointer-events: none;
+            /* Bloquea clics en toda la tarjeta */
+        }
+
+        /* Permitir que el acordeón siga funcionando incluso si está agotado */
+        .card-prod.agotado .prod-desc-container {
+            pointer-events: auto;
+        }
+
+        /* Etiqueta de Agotado */
+        .badge-agotado {
+            background: #555;
+            color: #fff;
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+
+        /* Botones de acción rápida en la carta */
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .btn-add-fast {
+            flex: 1;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .btn-add-note {
+            flex: 1;
+            background: #222;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        /* Acordeón de descripción */
+        .desc-toggle {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 8px;
+            margin-top: 8px;
+            border-top: 1px solid #222;
+        }
+
+        .desc-content {
+            display: none;
+            font-size: 0.8rem;
+            color: #888;
+            padding: 8px 0;
+        }
+
+        .desc-content.show {
+            display: block;
+        }
+
+        .arrow-icon {
+            transition: transform 0.3s;
+        }
+
+        .rotate {
+            transform: rotate(180deg);
+        }
+
+        .nombre-header h4 {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 10px;
+            flex: 1;
+            /* Esto hace que el nombre tome todo el espacio y deje la flecha al final */
+        }
+
+        /* ESTILOS DEL HEADER */
+        .main-header {
+            height: 60px;
+            background: #080808;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: center;
+            /* Centra horizontalmente */
+            align-items: center;
+            /* Centra verticalmente */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 3000;
+        }
+
+        .logo-img {
+            height: 45px;
+            /* Aumenté un poco el tamaño para que destaque al estar solo */
+            width: auto;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .logo-img:active {
+            transform: scale(0.95);
+            /* Efecto de pulsación al tocarlo */
+        }
+
+        /* IMPORTANTE: Ajustar el cuerpo para que no se esconda nada */
+        .main-grid {
+            margin-top: 60px;
+        }
+
+
+
+        /* Animación de pulso y color para la tarjeta */
+        @keyframes pulse-add {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+                background-color: rgba(255, 196, 0, 0.15);
+                box-shadow: 0 0 15px rgba(255, 196, 0, 0.3);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+
+        /* Burbuja de notificación (Toast) */
+        .toast-msg {
+            position: fixed;
+            top: 80px;
+            /* Debajo del logo */
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: #27ae60;
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast-msg.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Notificación de edición permanente */
+        .edit-mode-banner {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(135deg, #ff9500 0%, #ff6b00 100%);
+            color: #fff;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            z-index: 2500;
+            box-shadow: 0 4px 12px rgba(255, 107, 0, 0.4);
+            animation: slideDown 0.3s ease;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .edit-mode-banner:hover {
+            background: linear-gradient(135deg, #ff6b00 0%, #ff4500 100%);
+            box-shadow: 0 6px 16px rgba(255, 107, 0, 0.6);
+        }
+
+        .edit-mode-banner.show {
+            display: flex;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-40px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Ajustar grid cuando hay edit-mode-banner */
+        .main-grid.edit-mode {
+            margin-top: 100px;
+        }
+
+        /* Expansión de la columna 2 cuando se selecciona Mesas (SOLO EN DESKTOP) */
+        @media (min-width: 1001px) {
+            .main-grid.mesas-expanded {
+                grid-template-columns: 80px 500px 1fr 460px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="main-header">
+        <img src="img/logo.png" alt="MR. GEORGE" class="logo-img" onclick="location.reload()">
+    </header>
+
+    <div class="edit-mode-banner" id="edit-mode-banner" onclick="startNewOrder()"></div>
+
+    <div class="main-grid">
+        <div class="col sidebar-main active-m" id="m-col-1">
+            <button class="nav-link active nav-btn" onclick="handleNavClick(this, 'nuevo')"><i>➕</i>Nuevo</button>
+            <button class="nav-link nav-btn" id="btn-mesas"
+                onclick="handleNavClick(this, 'mesas')"><i>🪑</i>Mesas</button>
+            <button class="nav-link nav-btn" id="btn-pedidos"
+                onclick="handleNavClick(this, 'pedidos')"><i>📋</i>Pedidos</button>
+        </div>
+
+
+
+        <div class="col catalog-container" id="m-col-2">
+            <div style="padding: 15px; position: relative;">
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="text" id="search-input" placeholder="🔍 Buscar producto..." oninput="filterProducts()"
+                        style="width: 100%; padding: 12px 40px 12px 12px; border-radius: 8px; border: 1px solid var(--border); background: #111; color: white; outline: none;">
+
+                    <span id="clear-search" onclick="clearSearch()"
+                        style="position: absolute; right: 12px; color: #666; cursor: pointer; display: none; font-size: 1.2rem; font-weight: bold;">
+                        &times;
+                    </span>
+                </div>
+            </div>
+            <div class="catalog-split">
+                <div class="cat-list-vertical" id="v-cats"></div>
+                <div class="grid-items" id="v-prods"></div>
+            </div>
+        </div>
+
+        <div class="col service-sidebar" id="m-col-3">
+            <div id="service-content">
+                <div style="display:flex; flex-direction: column; gap:5px; margin-bottom:15px;">
+                    <button class="btn-method active" onclick="setMethod(this, 'Mesa')" style="flex:1">MESA</button>
+                    <button class="btn-method" onclick="setMethod(this, 'Recoger en tienda')"
+                        style="flex:1">RECOGER</button>
+                    <button class="btn-method" onclick="setMethod(this, 'Domicilio')" style="flex:1">DOMICILIO</button>
+                </div>
+                <div class="dynamic-fields" id="fields-container"></div>
+            </div>
+
+            <div id="view-mesas" class="view-overlay">
+                <h2 style="margin-bottom:20px; color:var(--accent)">Mesas Activas</h2>
+                <div id="mesas-list"></div>
+            </div>
+
+            <div id="view-pedidos" class="view-overlay">
+                <h2 style="margin-bottom:20px; color:var(--accent)">Todos los Pedidos</h2>
+                <div id="pedidos-list"></div>
+            </div>
+        </div>
+
+        <div class="col order-panel" id="m-col-4">
+            <div style="padding: 15px; border-bottom: 1px solid #eee;">
+                <h2 id="order-title" style="font-size: 1rem;">Pedido: --</h2>
+            </div>
+            <div class="order-content" id="cart-box"></div>
+            <div style="border-top: 1px solid #eee; padding: 10px 8px;">
+                <label
+                    style="font-size: 0.62rem; color: #666; display: block; margin-bottom: 4px; font-weight: bold; text-transform: uppercase;">Observaciones generales</label>
+                <textarea id="val-observaciones" class="input-pro" placeholder="Ej: Sin lechuga, portería, billete de ..."
+                    style="background: #fff; color: #000; border: 1px solid #ddd; height: 50px; font-size: 0.8rem; resize: none;"></textarea>
+            </div>
+            <div class="order-footer">
+                <div class="order-method">
+                    <label
+                        style="font-size: 0.62rem; color: #666; display: block; margin-bottom: 4px; font-weight: bold; text-transform: uppercase;">Método
+                        de Pago</label>
+                    <select id="val-metodo-pago" class="input-pro"
+                        style="background: #fff; color: #000; border: 1px solid #ddd; padding: 8px; height: 40px; font-weight: bold;">
+                        <option value="" selected disabled>Seleccionar método de pago</option>
+                        <option value="Efectivo">💵 Efectivo</option>
+                        <option value="Transferencia">📱 Transferencia</option>
+                        <option value="Efectivo/Transferencia">🔄 Efectivo / Transferencia</option>
+                    </select>
+                </div>
+
+                <div class="order-total-row">
+                    <span>TOTAL</span><span id="order-total">$ 0</span>
+                </div>
+                <button class="btn-action" onclick="finish()">ENVIAR PEDIDO</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-bar" id="bottom-tabs">
+        <div class="tab-item disabled" id="t-1" onclick="goStep(1)">
+            <span class="tab-icon">🍽️</span>
+            <span class="tab-label">Carta</span>
+        </div>
+        <div class="tab-item disabled" id="t-2" onclick="goStep(2)">
+            <span class="tab-icon">📝</span>
+            <span class="tab-label">Datos</span>
+        </div>
+        <div class="tab-item disabled" id="t-3" onclick="goStep(3)">
+            <span class="tab-icon">🛒</span>
+            <span class="tab-label">Pedido</span>
+        </div>
+    </div>
+
+    <script>
+        let db = []; let cart = []; let currentMethod = 'Mesa'; let currentStep = 0;
+        let config = null;
+
+        async function init() {
+            // Inicializar inputs INMEDIATAMENTE sin esperar a cargas
+            setMethod(document.querySelector('.btn-method'), 'Mesa');
+            
+            // Iniciar mostrando Carta (paso 1) por defecto
+            goStep(1);
+            
+            try {
+                const response = await fetch('config.json');
+                config = await response.json();
+
+                // 1. CARGAR PRODUCTOS DESDE LA API DE PRODUCTOS
+                const pRes = await fetch(config.apiUrls.productos);
+                const data = await pRes.json();
+                db = data.productos || data;
+
+                renderCats();
+                renderItems(db);
+            } catch (err) { console.error("Error inicializando:", err); }
+        }
+
+        // --- FUNCIONES DE FILTRADO Y VISTAS ---
+
+        async function showMesas() {
+            // Mostrar automáticamente la pestaña de Datos cuando se muestran las mesas
+            goStep(2);
+            
+            const list = document.getElementById('mesas-list');
+            document.getElementById('service-content').style.display = 'none';
+            document.getElementById('view-pedidos').classList.remove('active');
+            document.getElementById('view-mesas').classList.add('active');
+            list.innerHTML = "<p>Cargando mesas activas...</p>";
+
+            // 2. RECIBIR DATOS Y FILTRAR COLUMNA Q (true)
+            const res = await fetch(config.apiUrls.reciboBaseDatos);
+            const data = await res.json();
+            const activas = data
+                .filter(item => item.mesasActivas === true || item.q === true)
+                .sort((a, b) => {
+                    const ma = Number(a.mesa || 0);
+                    const mb = Number(b.mesa || 0);
+                    return ma - mb;
+                });
+
+            list.innerHTML = activas.length ? activas.map(m => `
+    <div class="data-card" onclick="editExistingOrder(${JSON.stringify(m).replace(/"/g, '&quot;')})" style="cursor:pointer; border-left: 4px solid var(--accent);">
+        <div style="display:flex; justify-content:space-between;">
+            <span class="status-badge">MESA ${m.mesa}</span>
+            <small>${m.hora || ''}</small>
+        </div>
+        <div style="margin:10px 0; font-size:0.9rem; color:#fff; font-weight:bold;">${m.nombre || ''}</div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.7rem; color:var(--accent)">PULSA PARA EDITAR</span>
+            <div style="font-weight:bold; color:var(--accent)">$${Number(m.totalPagar).toLocaleString()}</div>
+        </div>
+    </div>
+`).join('') : "<p>No hay mesas activas.</p>";
+        }
+
+        async function showPedidos() {
+            const list = document.getElementById('pedidos-list');
+            document.getElementById('service-content').style.display = 'none';
+            document.getElementById('view-mesas').classList.remove('active');
+            document.getElementById('view-pedidos').classList.add('active');
+            list.innerHTML = "<p>Cargando todos los pedidos...</p>";
+
+            // 3. RECIBIR TODOS LOS DATOS
+            const res = await fetch(config.apiUrls.reciboBaseDatos);
+            const data = await res.json();
+
+            list.innerHTML = data.map(p => `
+                <div class="data-card" style="border-color:#333">
+                    <div style="font-size:0.7rem; color:#555; margin-bottom:5px;">${p.fecha} - ${p.hora}</div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <strong>${p.nombre}</strong>
+                        <span>$${Number(p.totalPagar).toLocaleString()}</span>
+                    </div>
+                </div>
+            `).reverse().join('');
+        }
+
+        function startNewOrder() {
+            document.getElementById('service-content').style.display = 'block';
+            document.getElementById('view-mesas').classList.remove('active');
+            document.getElementById('view-pedidos').classList.remove('active');
+            cart = []; updateUI();
+            // Restaurar visibilidad de los botones de método cuando se inicia una nueva comanda
+            document.querySelectorAll('.btn-method').forEach(b => b.style.display = '');
+            // Ocultar notificación de edición
+            hideEditModeBanner();
+
+            // Mostrar la columna de servicio (Datos) junto a la barra lateral sin tocar tabs
+            showColumn(1);
+        }
+
+        // --- LÓGICA DE ENVÍO Y UI ---
+
+        async function finish() {
+            if (!cart.length) return alert("La comanda está vacía");
+
+            const metodoSeleccionado = document.getElementById('val-metodo-pago').value;
+            if (!metodoSeleccionado) return alert("Seleccione método de pago");
+
+            // Captura observaciones generales
+            const observacionesGenerales = document.getElementById('val-observaciones')?.value.trim() || "";
+
+            const inputNombre = document.getElementById('val-nombre')?.value.trim() || "C";
+            const inputTel = document.getElementById('val-tel')?.value.trim() || "000";
+            // Si el método es Mesa, usar el número de mesa; si no, enviar vacío
+            const inputMesa = currentMethod === 'Mesa' ? (document.getElementById('val-mesa')?.value || "0") : "";
+
+            // Capturar campos de domicilio si aplica
+            const inputDireccion = document.getElementById('val-direccion')?.value.trim() || "";
+            const inputReferencia = document.getElementById('val-referencia')?.value.trim() || "";
+
+            // Extraer coordenadas de diferentes formatos
+            const googleMapsInput = document.getElementById('val-google-maps')?.value.trim() || "";
+            const coords = extractCoordinates(googleMapsInput);
+            const inputUbicacionGoogleMaps = coords ? `https://www.google.com/maps?q=${coords}` : "";
+
+            const fecha = new Date();
+
+            const nombreCodigo = inputNombre.substring(0, 3).toUpperCase().padEnd(3, 'X');
+            const telefonoCodigo = inputTel.slice(-3).padStart(3, '0');
+            const facturaId = `#${nombreCodigo}${telefonoCodigo}${fecha.getFullYear().toString().slice(-2)}${String(fecha.getMonth() + 1).padStart(2, '0')}${String(fecha.getDate()).padStart(2, '0')}${String(fecha.getHours()).padStart(2, '0')}${String(fecha.getMinutes()).padStart(2, '0')}${String(fecha.getSeconds()).padStart(2, '0')}`;
+
+            const totalCalculado = cart.reduce((s, i) => s + (i.precio * i.qty), 0);
+
+            const payload = {
+                tipoEntrega: currentMethod,
+                numeroFactura: facturaId,
+                fecha: fecha.toLocaleDateString(),
+                hora: fecha.toLocaleTimeString('it-IT'),
+                nombre: inputNombre,
+                telefono: inputTel,
+                mesa: inputMesa,
+                // Se concatena la nota al nombre del producto si existe
+                productos: cart.map(i => `${i.nombre} x${i.qty} - $${i.precio}${i.nota ? ` (${i.nota})` : ''}`).join('\n'),
+                totalProductos: totalCalculado,
+                costoDomicilio: 0,
+                totalPagar: totalCalculado,
+                metodoPago: metodoSeleccionado,
+                observaciones: observacionesGenerales, // Se envía a la columna P
+                mesasActivas: currentMethod === 'Mesa',
+                // Campos de domicilio
+                direccion: inputDireccion,
+                puntoReferencia: inputReferencia,
+                ubicacionGoogleMaps: inputUbicacionGoogleMaps
+            };
+
+            const btn = document.querySelector('.btn-action');
+            btn.disabled = true; btn.innerText = "REGISTRANDO...";
+
+            try {
+                await fetch(config.apiUrls.envioBaseDatos, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(payload)
+                });
+                alert("¡Pedido enviado!\nFactura: " + facturaId);
+                location.reload();
+            } catch (err) {
+                alert("Error de conexión.");
+                btn.disabled = false; btn.innerText = "ENVIAR PEDIDO";
+            }
+        }
+
+
+        // --- FUNCIONES DE SOPORTE (TU LÓGICA ORIGINAL) ---
+
+        // Función para extraer coordenadas de diferentes formatos
+        function extractCoordinates(input) {
+            if (!input) return null;
+
+            // Formato 1: URL con @ (https://www.google.com/maps/place/...@10.3792124,-75.4804932,...)
+            const atMatch = input.match(/@([\d.-]+),([\d.-]+)/);
+            if (atMatch) return `${atMatch[1]},${atMatch[2]}`;
+
+            // Formato 2: URL con ?q=lat,lng (https://www.google.com/maps?q=10.377106,-75.474624)
+            const qMatch = input.match(/[?&]q=([\d.-]+),([\d.-]+)/);
+            if (qMatch) return `${qMatch[1]},${qMatch[2]}`;
+
+            // Formato 3: Coordenadas directas con paréntesis (10.379112, -75.475697) o ((10.379112, -75.475697))
+            const parenMatch = input.match(/[\(]*([\d.-]+)\s*,\s*([\d.-]+)[\)]*$/);
+            if (parenMatch) return `${parenMatch[1]},${parenMatch[2]}`;
+
+            // Formato 4: Coordenadas con espacios variables (10.379112  -75.475697)
+            const spaceMatch = input.match(/([\d.-]+)\s{2,}([\d.-]+)$/);
+            if (spaceMatch) return `${spaceMatch[1]},${spaceMatch[2]}`;
+
+            // Formato 5: Coordenadas simples separadas por coma (10.379112, -75.475697)
+            const simpleMatch = input.match(/([\d.-]+)\s*,\s*([\d.-]+)/);
+            if (simpleMatch) return `${simpleMatch[1]},${simpleMatch[2]}`;
+
+            return null;
+        }
+
+        function setMethod(btn, method) {
+            document.querySelectorAll('.btn-method').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentMethod = method;
+
+            const container = document.getElementById('fields-container');
+            // Inputs base: nombre, teléfono y mesa (condicionado)
+            let html = `
+                <input type="text" id="val-nombre" class="input-pro input-compact" placeholder="Nombre cliente" oninput="updateTitle()">
+                <input type="tel" id="val-tel" class="input-pro input-compact" placeholder="Teléfono" oninput="updateTitle()">
+                <input type="number" id="val-mesa" class="input-pro input-compact input-mesa" placeholder="Núm. mesa" oninput="updateTitle()">
+            `;
+
+            // Si es Domicilio, añadir campos adicionales: dirección, punto de referencia, Google Maps
+            if (method === 'Domicilio') {
+                html += `
+                <input type="text" id="val-direccion" class="input-pro input-compact" placeholder="Dirección">
+                <input type="text" id="val-referencia" class="input-pro input-compact" placeholder="Punto de referencia">
+                <input type="text" id="val-google-maps" class="input-pro input-compact" placeholder="URL Google Maps o coordenadas (lat,lng)">
+                `;
+            }
+
+            container.innerHTML = html;
+
+            // Mostrar/ocultar el input de mesa según el método seleccionado
+            const inputMesa = document.getElementById('val-mesa');
+            if (method === 'Mesa') {
+                inputMesa.style.display = '';
+            } else {
+                inputMesa.style.display = 'none';
+                // Limpiar valor de mesa cuando no aplica
+                inputMesa.value = '';
+            }
+            updateTitle();
+        }
+
+
+
+
+        function filterProducts() {
+            const input = document.getElementById('search-input');
+            const clearBtn = document.getElementById('clear-search');
+            const query = input.value.toLowerCase();
+
+            // Mostrar/Ocultar la X según si hay texto
+            clearBtn.style.display = query.length > 0 ? 'block' : 'none';
+
+            // Filtrar la base de datos
+            const filtered = db.filter(p => {
+                return p.nombre.toLowerCase().includes(query) ||
+                    (p.descripcion || "").toLowerCase().includes(query);
+            });
+
+            renderItems(filtered);
+        }
+
+        // Función específica para el botón X
+        function clearSearch() {
+            const input = document.getElementById('search-input');
+            input.value = ""; // Borrar texto
+            filterProducts(); // Ejecutar filtro (esto ocultará la X y restaurará la lista)
+            input.focus();    // Devolver el foco al input
+        }
+
+        function updateTitle() {
+            const title = document.getElementById('order-title');
+            if (currentMethod === 'Mesa') title.innerText = `Pedido: Mesa ${document.getElementById('val-mesa')?.value || '--'}`;
+            else title.innerText = `Pedido: ${currentMethod} - ${document.getElementById('val-nombre')?.value || '...'}`;
+        }
+
+        function showEditModeBanner(mesaNumber) {
+            const banner = document.getElementById('edit-mode-banner');
+            banner.textContent = `✏️ EDITANDO MESA ${mesaNumber} - Haz clic aqui cancelar`;
+            banner.classList.add('show');
+            document.querySelector('.main-grid').classList.add('edit-mode');
+        }
+
+        function hideEditModeBanner() {
+            const banner = document.getElementById('edit-mode-banner');
+            banner.classList.remove('show');
+            document.querySelector('.main-grid').classList.remove('edit-mode');
+        }
+
+        function renderCats() {
+            const list = ["Todos", ...new Set(db.map(p => p.categoria))];
+            document.getElementById('v-cats').innerHTML = list.map(c => `<button class="cat-btn" onclick="filterCat('${c}', this)">${c}</button>`).join('');
+        }
+
+        function filterCat(cat, btn) {
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderItems(cat === 'Todos' ? db : db.filter(p => p.categoria === cat));
+        }
+
+        function renderItems(list) {
+            document.getElementById('v-prods').innerHTML = list.map(p => {
+                const estaAgotado = p.activo === false;
+
+                return `
+        <div class="card-prod ${estaAgotado ? 'agotado' : ''}" id="prod-card-${p.id}">
+            ${estaAgotado ? '<span class="badge-agotado">AGOTADO</span>' : ''}
+            
+            <div class="info-principal">
+                <div class="nombre-header" onclick="toggleDesc(${p.id}, event)" 
+                     style="display:flex; justify-content: space-between; align-items: center; cursor:pointer; width: 100%;">
+                    <h4 style="margin:0; font-size: 1rem;">${p.nombre}</h4>
+                    <span class="expand-icon" id="arrow-${p.id}" style="font-size:0.8rem; transition:0.3s; color: var(--accent);">▼</span>
+                </div>
+                
+                <div class="price" style="color:var(--accent); font-weight:bold; margin-top:4px;">
+                    $${Number(p.precio).toLocaleString()}
+                </div>
+            </div>
+
+            <div class="prod-desc-text" id="desc-${p.id}" style="display:none; font-size:0.8rem; color:#888; margin:10px 0; border-left:2px solid var(--accent); padding-left:8px;">
+                ${p.descripcion || 'Sin descripción disponible.'}
+            </div>
+
+            <div class="card-actions" style="display:flex; gap:8px; margin-top:12px;">
+                <button class="btn-add-fast" onclick="add(${p.id}, false)" ${estaAgotado ? 'disabled' : ''} 
+                    style="flex:1; background:var(--accent); color:#000; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer;">
+                    ⚡ Rápido
+                </button>
+                <button class="btn-add-note" onclick="add(${p.id}, true)" ${estaAgotado ? 'disabled' : ''} 
+                    style="flex:1; background:#222; color:#fff; border:1px solid #444; padding:8px; border-radius:6px; cursor:pointer;">
+                    📝 +Nota
+                </button>
+            </div>
+        </div>`;
+            }).join('');
+        }
+
+        // Función para mostrar/ocultar descripción
+        // Función para mostrar/ocultar descripción con giro de flecha
+        function toggleDesc(id, event) {
+            event.stopPropagation();
+            const desc = document.getElementById(`desc-${id}`);
+            const arrow = document.getElementById(`arrow-${id}`);
+
+            if (desc.style.display === "none") {
+                desc.style.display = "block";
+                arrow.style.transform = "rotate(180deg)";
+            } else {
+                desc.style.display = "none";
+                arrow.style.transform = "rotate(0deg)";
+            }
+        }
+
+        function add(id, conNota) {
+            const p = db.find(x => x.id == id);
+            if (!p) return;
+
+            let nota = "";
+            if (conNota) {
+                nota = prompt(`Instrucciones para ${p.nombre}:`, "");
+                if (nota === null) return;
+            }
+
+            // --- EFECTO VISUAL ---
+            const card = document.getElementById(`prod-card-${id}`);
+            if (card) {
+                card.classList.remove('anim-add');
+                void card.offsetWidth; // Truco de JS para reiniciar la animación CSS
+                card.classList.add('anim-add');
+            }
+
+            showToast(`+ ${p.nombre}`);
+
+            // --- LÓGICA DE CARRITO ---
+            const ex = cart.find(x => x.id == id && x.nota === nota);
+            if (ex) {
+                ex.qty++;
+            } else {
+                cart.push({ ...p, qty: 1, nota: nota, cartId: Date.now() + Math.random() });
+            }
+
+            updateUI();
+        }
+
+        // Función para mostrar la notificación
+        function showToast(text) {
+            let toast = document.getElementById('main-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'main-toast';
+                toast.className = 'toast-msg';
+                document.body.appendChild(toast);
+            }
+            toast.innerText = text;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 1500);
+        }
+
+        // NUEVA: Cambiar cantidad (+ o -)
+        function changeQty(cartId, delta) {
+            const item = cart.find(i => i.cartId === cartId);
+            if (!item) return;
+            item.qty += delta;
+            if (item.qty <= 0) removeLine(cartId); // Si llega a 0 se elimina
+            updateUI();
+        }
+
+        // NUEVA: Eliminar línea completa (Bote de basura)
+        function removeLine(cartId) {
+            if (confirm("¿Eliminar este producto de la comanda?")) {
+                cart = cart.filter(i => i.cartId !== cartId);
+                updateUI();
+            }
+        }
+
+        // NUEVA: Editar nota rápida
+        function editNote(cartId) {
+            const item = cart.find(i => i.cartId === cartId);
+            const nuevaNota = prompt("Editar instrucciones:", item.nota);
+            if (nuevaNota !== null) {
+                item.nota = nuevaNota;
+                updateUI();
+            }
+        }
+
+        // NUEVA: Vaciar comanda completa
+        function clearCart() {
+            if (confirm("¿Estás seguro de vaciar TODA la comanda?")) {
+                cart = [];
+                updateUI();
+            }
+        }
+
+        // ACTUALIZACIÓN: Interfaz de la comanda (Columna 4)
+        function updateUI() {
+            const box = document.getElementById('cart-box');
+            const total = cart.reduce((s, i) => s + (i.precio * i.qty), 0);
+            document.getElementById('order-total').innerText = `$ ${total.toLocaleString()}`;
+
+            if (cart.length === 0) {
+                box.innerHTML = '<p style="text-align:center; color:#999; margin-top:50px;">Vacío</p>';
+                return;
+            }
+
+            // Botón Vaciar (Solo aparece si hay productos)
+            let html = `<button class="btn-empty-cart" onclick="clearCart()">🗑️ Vaciar Comanda</button>`;
+
+            html += cart.map(i => `
+        <div class="cart-item-line">
+            <button class="cart-item-trash" onclick="removeLine(${i.cartId})">🗑️</button>
+            <span class="cart-item-name">${i.nombre}</span>
+            <span class="cart-item-edit" onclick="editNote(${i.cartId})">✏️</span>
+            <span class="cart-item-price">$${(i.precio * i.qty).toLocaleString()}</span>
+            <div class="cart-item-controls">
+                <button class="cart-item-btn-qty" onclick="changeQty(${i.cartId}, -1)">-</button>
+                <span class="cart-item-qty">${i.qty}</span>
+                <button class="cart-item-btn-qty" onclick="changeQty(${i.cartId}, 1)">+</button>
+            </div>
+        </div>
+        ${i.nota ? `<div class="cart-item-note">↳ ${i.nota}</div>` : ''}
+    `).join('');
+
+            box.innerHTML = html;
+        }
+
+        // goStep remapeado: sidebar (m-col-1) permanece fija; pasos 1..3 -> cols 2..4
+        function goStep(n) {
+            // Limpiar estados
+            document.querySelectorAll('.col').forEach(c => c.classList.remove('active-m'));
+
+            // Sidebar siempre visible
+            const sidebar = document.getElementById('m-col-1');
+            if (sidebar) sidebar.classList.add('active-m');
+
+            // Mapear paso n (1..3) a columna m-col-(n+1)
+            const idx = Number(n);
+            if (!isNaN(idx) && idx >= 1 && idx <= 3) {
+                const targetCol = document.getElementById(`m-col-${idx + 1}`);
+                if (targetCol) targetCol.classList.add('active-m');
+                currentStep = idx;
+            } else {
+                currentStep = 0;
+            }
+
+            updateNavigationUI();
+        }
+
+        // Mostrar columna sin cambiar el estado de los tabs (no altera currentStep)
+        function showColumn(n) {
+            // Limpiar estados
+            document.querySelectorAll('.col').forEach(c => c.classList.remove('active-m'));
+
+            // Sidebar siempre visible
+            const sidebar = document.getElementById('m-col-1');
+            if (sidebar) sidebar.classList.add('active-m');
+
+            // Mapear paso n (1..3) a columna m-col-(n+1)
+            const idx = Number(n);
+            if (!isNaN(idx) && idx >= 1 && idx <= 3) {
+                const targetCol = document.getElementById(`m-col-${idx + 1}`);
+                if (targetCol) targetCol.classList.add('active-m');
+            }
+        }
+
+        // updateNavigationUI: actualiza la barra de tabs inferior
+        function updateNavigationUI() {
+            const tabs = document.querySelectorAll('.tab-item');
+            if (currentStep === 0) {
+                tabs.forEach(t => { t.classList.remove('active'); t.classList.add('disabled'); });
+                return;
+            }
+
+            tabs.forEach((t, idx) => {
+                const stepNum = idx + 1; // 1..3
+                t.classList.toggle('active', stepNum === currentStep);
+                if (stepNum <= currentStep) t.classList.remove('disabled');
+                else t.classList.add('disabled');
+            });
+        }
+
+        function handleNavClick(btn, action) {
+            // Remover clase active de todos los nav-btn
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+            // Agregar clase active al botón clickeado
+            btn.classList.add('active');
+            // Determinar el paso objetivo según la acción:
+            // - 'pedidos' debe abrir el paso final (3 -> columna Pedido)
+            // - 'nuevo' y 'mesas' abren la sección Datos/servicio (1 -> columna Datos)
+            let targetStep = 1;
+            if (action === 'pedidos') targetStep = 3;
+
+            // Mostrar la columna correspondiente sin tocar los tabs inferiores
+            showColumn(targetStep);
+
+            // Ejecutar la acción correspondiente dentro de la columna de servicio
+            if (action === 'nuevo') {
+                startNewOrder();
+            } else if (action === 'mesas') {
+                showMesas();
+            } else if (action === 'pedidos') {
+                showPedidos();
+            }
+        }
+
+        function editExistingOrder(mesaData) {
+            if (!confirm(`¿Cargar el pedido de la Mesa ${mesaData.mesa} para editarlo?`)) return;
+
+            // Mostrar notificación de edición
+            showEditModeBanner(mesaData.mesa);
+
+            // 1. Limpiar el carrito actual
+            cart = [];
+
+            // 2. Procesar el string de productos
+            // Asumimos el formato: "Producto x2 - $10.000 (Nota)"
+            const lineas = mesaData.productos.split('\n');
+
+            lineas.forEach(linea => {
+                try {
+                    // Extraer nombre, cantidad y nota usando Regex
+                    const match = linea.match(/(.+) x(\d+) - \$[\d.]+ ?(?:\((.*)\))?/);
+                    if (match) {
+                        const [_, nombre, qty, nota] = match;
+
+                        // Buscar el producto original en la DB para recuperar ID y Precio
+                        const productoOriginal = db.find(p => p.nombre.trim() === nombre.trim());
+
+                        if (productoOriginal) {
+                            cart.push({
+                                ...productoOriginal,
+                                qty: parseInt(qty),
+                                nota: nota || "",
+                                cartId: Date.now() + Math.random()
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.error("Error procesando línea:", linea);
+                }
+            });
+
+            // 3. Cargar datos del cliente en el formulario
+            document.getElementById('service-content').style.display = 'block';
+            // Ocultar opciones de método (Mesa / Recoger / Domicilio) cuando se edita una mesa
+            document.querySelectorAll('.btn-method').forEach(b => b.style.display = 'none');
+            // Forzar el método a 'Mesa'
+            currentMethod = 'Mesa';
+            setTimeout(() => {
+                if (document.getElementById('val-nombre')) document.getElementById('val-nombre').value = mesaData.nombre;
+                if (document.getElementById('val-mesa')) document.getElementById('val-mesa').value = mesaData.mesa;
+                if (document.getElementById('val-tel')) document.getElementById('val-tel').value = mesaData.telefono || "";
+                updateTitle();
+            }, 100);
+
+            // 4. Actualizar UI y mostrar la columna de Pedido (sin tocar tabs)
+            updateUI();
+            showColumn(3);
+            showToast("Pedido cargado para edición");
+        }
+
+        window.onload = init;
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error de Servicio</title>
+    <style>
+        /* 🎨 Estilos Generales y Reset */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0d1117; 
+            color: #c9d1d9; 
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; 
+        }
+
+        /* 🖼️ Contenedor Principal */
+        .container {
+            text-align: center;
+            max-width: 90%;
+            animation: fadeIn 1s ease-out; 
+        }
+
+        /* 💥 Animación para el Número 404 */
+        h1 {
+            font-size: 10em;
+            color: #ff7b72; 
+            margin: 0;
+            text-shadow: 0 0 10px rgba(255, 123, 114, 0.5);
+            animation: pulse 2s infinite alternate; 
+        }
+
+        /* 💡 Título y Mensajes */
+        h2 {
+            font-size: 2.5em;
+            margin-top: 5px;
+            color: #58a6ff; 
+            letter-spacing: 2px;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin: 25px 0;
+        }
+        
+        /* 🔑 Keyframes CSS (Animaciones) */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.05); opacity: 0.9; }
+        }
+
+        /* Estrellas/Partículas de fondo (decoración extra) */
+        .star {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #ffffff;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 5s infinite ease-in-out;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+        }
+
+        /* Posicionamiento aleatorio de las estrellas */
+        .star:nth-child(1) { top: 10%; left: 20%; animation-delay: 0s; }
+        .star:nth-child(2) { top: 50%; left: 80%; animation-delay: 1.5s; }
+        .star:nth-child(3) { top: 80%; left: 40%; animation-delay: 3s; }
+        .star:nth-child(4) { top: 30%; left: 60%; animation-delay: 4.5s; }
+        .star:nth-child(5) { top: 90%; left: 10%; animation-delay: 6s; }
+        .star:nth-child(6) { top: 5%; left: 90%; animation-delay: 2.2s; }
+        .star:nth-child(7) { top: 65%; left: 15%; animation-delay: 3.8s; }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Estilos para el botón de reintento */
+    .retry-button {
+        background-color: #58a6ff; 
+        color: #0d1117;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 25px;
+        font-size: 1.1em;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: background-color 0.3s, transform 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .retry-button:hover {
+        background-color: #79a6ff;
+        transform: translateY(-2px);
+    }
+
+    </style>
+</head>
+<body>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+    <div class="star"></div>
+
+<div class="container">
+        <h1 id="main-title">404</h1>
+        <h2 id="service-status">Servicio  No Disponible</h2>
+        
+        <p id="error-message-text">
+            No se pudo establecer conexión con el servidor. Por favor, comuníquese con el administrador del sistema.
+        </p>
+        
+        <p id="subtext" style="font-size: 0.9em; margin-top: 30px; opacity: 0.7;">
+         Verificando el estado del servicio. Próximo intento automático en <span id="countdown">30</span> segundo(s).
+         </p>
+
+        
+        <div id="retry-button-container"></div>
+    </div>
+
+   <script>
+        // ARCHIVOS Y CONSTANTES
+        const CONFIG_FILE_URL = 'config.json';
+        const CHECK_INTERVAL = 30000; // 30 segundos
+        const COUNTDOWN_TIME = CHECK_INTERVAL / 1000; // 30 segundos
+        
+        // 🚨 CAMBIO CLAVE: Determinar la URL final de redirección
+        const urlParams = new URLSearchParams(window.location.search);
+        // Obtiene el valor del parámetro 'from'. Por defecto, usa 'index.html' si no se encuentra.
+        const FINAL_REDIRECT_URL = urlParams.get('from') || 'index.html'; 
+
+        // ELEMENTOS DEL DOM
+        const container = document.getElementById('retry-button-container');
+        const serviceStatus = document.getElementById('service-status');
+        const errorText = document.getElementById('error-message-text');
+        const maintitle = document.getElementById('main-title');
+        const subText = document.getElementById('subtext');
+        const countdownElement = document.getElementById('countdown');
+        
+        let checkIntervalId; 
+        let countdownIntervalId;
+        let API_URL = null; 
+
+        // FUNCIÓN PARA MOSTRAR EL BOTÓN (Solo se llama si la API responde Vigente)
+        function displayButton() {
+            serviceStatus.innerHTML = "¡Conexión Restablecida!";
+            errorText.innerHTML = "El servicio está disponible. Haz clic para ingresar.";
+            subText.style.display = 'none'; 
+            maintitle.style.display = 'none';
+
+            clearInterval(checkIntervalId);
+            clearInterval(countdownIntervalId);
+
+            // Inyectar el botón clickable
+            container.innerHTML = `
+                <button class="retry-button" onclick="window.location.replace(FINAL_REDIRECT_URL)">
+                    Ir al sitio
+                </button>
+            `;
+        }
+        
+        // FUNCIÓN PARA LA CUENTA REGRESIVA (30, 29, 28...)
+        function startCountdown() {
+            let timeLeft = COUNTDOWN_TIME;
+            countdownElement.textContent = timeLeft;
+
+            countdownIntervalId = setInterval(() => {
+                timeLeft--;
+                countdownElement.textContent = timeLeft; 
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownIntervalId);
+                }
+            }, 1000); 
+        }
+
+
+        // FUNCIÓN PRINCIPAL DE CHEQUEO
+        async function checkLicenseStatus() {
+            clearInterval(countdownIntervalId);
+
+            // 1. Cargar la configuración
+            if (!API_URL) {
+                try {
+                    const configResponse = await fetch(CONFIG_FILE_URL);
+                    if (!configResponse.ok) throw new Error('Error al cargar config.json');
+                    const config = await configResponse.json();
+                    API_URL = config.apiUrls.licencia; 
+                } catch (configError) {
+                    console.error('Fallo al cargar la configuración:', configError);
+                    serviceStatus.innerHTML = "Error Crítico";
+                    errorText.innerHTML = "No se pudo cargar la configuración de la aplicación.";
+                    subText.innerHTML = "Por favor, contacte con soporte técnico.";
+                    clearInterval(checkIntervalId); 
+                    return;
+                }
+            }
+            
+            // 2. Realizar la verificación de la licencia
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+                
+                const data = await response.json();
+                
+                if (data.isExpired === false) {
+                    // ACTIVO: Mostrar botón y detener todo.
+                    displayButton();
+                    
+                } else {
+                    // INACTIVO: Mostrar mensaje de espera y reiniciar el contador.
+                    serviceStatus.innerHTML = "Servicio Temporalmente No Disponible";
+                    errorText.innerHTML = "No pudimos establecer conexión con el servidor.";
+                    subText.style.display = 'block';
+                    
+                    startCountdown(); 
+                }
+                
+            } catch (error) {
+                // Manejo de errores de conexión de la API
+                console.error('Fallo en la verificación de la API:', error);
+                serviceStatus.innerHTML = "Error de Conexión";
+                errorText.innerHTML = "Hubo un error al intentar verificar el servicio.";
+                subText.style.display = 'block';
+                
+                startCountdown(); 
+            }
+        }
+
+        // 1. Ejecutar la verificación inmediatamente al cargar
+        checkLicenseStatus(); 
+
+        // 2. Configurar la verificación automática (cada 30 segundos)
+        checkIntervalId = setInterval(checkLicenseStatus, CHECK_INTERVAL);
+
+    </script>
+</body>
+</html>
