@@ -380,82 +380,88 @@
   </footer>
   
   
-    <div id="tab-master-container" style="position: fixed; left: 0; top: 50%; z-index: 10001; display: flex; align-items: center; touch-action: none;">
-    
-    <div id="drag-button" style="background-color: #25D366; color: white; padding: 15px 10px; border-radius: 0 10px 10px 0; cursor: grab; box-shadow: 2px 2px 10px rgba(0,0,0,0.3); user-select: none; font-weight: bold; font-size: 18px;">
-      ❯
-    </div>
-    
-    <div id="info-panel" style="position: absolute; left: -280px; width: 240px; background: white; padding: 20px; border-radius: 0 15px 15px 0; box-shadow: 5px 5px 15px rgba(0,0,0,0.2); transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; gap: 12px; border: 1px solid #eee; pointer-events: auto;">
-      <p style="margin: 0; color: #333; font-weight: bold; font-family: sans-serif; font-size: 16px;">¿Quieres una tienda como esta?</p>
-      <a href="https://wa.me/tu-numero-aqui" target="_blank" style="background-color: #25D366; color: white; text-decoration: none; padding: 12px; text-align: center; border-radius: 8px; font-weight: bold; font-family: sans-serif; font-size: 14px; box-shadow: 0 4px 6px rgba(37, 211, 102, 0.2);">
-        Contactar por WhatsApp
-      </a>
-    </div>
+  <div id="ui-tab-container" style="position: fixed; left: 0; top: 50%; z-index: 99999; display: flex; align-items: center; touch-action: none; transition: transform 0.2s ease;">
+  
+  <div id="ui-drag-button" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: white; width: 42px; height: 55px; display: flex; align-items: center; justify-content: center; border-radius: 0 12px 12px 0; cursor: grab; box-shadow: 4px 0 15px rgba(0,0,0,0.15); user-select: none; font-size: 20px; border-right: 1px solid rgba(255,255,255,0.2);">
+    <span style="transform: translateX(2px);">❯</span>
   </div>
+  
+  <div id="ui-info-panel" style="position: absolute; left: -300px; width: 260px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 22px; border-radius: 0 20px 20px 0; box-shadow: 10px 0 30px rgba(0,0,0,0.1); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; gap: 15px; border: 1px solid rgba(255,255,255,0.5); pointer-events: auto;">
+    
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="background: #25D366; width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 8px #25D366;"></div>
+        <p style="margin: 0; color: #1a1a1a; font-weight: 700; font-family: 'Segoe UI', Roboto, sans-serif; font-size: 15px; letter-spacing: -0.3px;">¿Te gusta esta tienda?</p>
+    </div>
 
-  <script>
-    (function() {
-      const container = document.getElementById('tab-master-container');
-      const button = document.getElementById('drag-button');
-      const panel = document.getElementById('info-panel');
+    <p style="margin: 0; color: #555; font-family: 'Segoe UI', sans-serif; font-size: 13px; line-height: 1.4;">Impulsa tu negocio con un menú digital interactivo y profesional.</p>
+    
+    <a href="https://wa.me/573000000000" target="_blank" style="background: #25D366; color: white; text-decoration: none; padding: 12px; text-align: center; border-radius: 10px; font-weight: 600; font-family: sans-serif; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.2s ease; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="18" height="18" alt="W">
+      Hablar con un asesor
+    </a>
+  </div>
+</div>
 
-      let isDragging = false;
-      let startY, startTop, startTime;
+<script>
+  (function() {
+    const container = document.getElementById('ui-tab-container');
+    const button = document.getElementById('ui-drag-button');
+    const panel = document.getElementById('ui-info-panel');
 
-      const startAction = (e) => {
-        isDragging = false;
-        startY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
-        startTop = container.offsetTop;
-        startTime = Date.now();
-        button.style.cursor = 'grabbing';
-      };
+    let isDragging = false;
+    let startY, startTop, startTime;
 
-      const moveAction = (e) => {
-        if (startY === undefined) return;
-        const currentY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
-        const deltaY = currentY - startY;
+    const onStart = (e) => {
+      isDragging = false;
+      startY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+      startTop = container.offsetTop;
+      startTime = Date.now();
+      button.style.cursor = 'grabbing';
+      button.style.transform = 'scale(0.95)';
+    };
 
-        // Si se mueve más de 10px, detectamos que es arrastre y no click
-        if (Math.abs(deltaY) > 10) {
-          isDragging = true;
-          panel.style.left = '-280px'; // Cerramos el panel si se está moviendo
-        }
+    const onMove = (e) => {
+      if (startY === undefined) return;
+      const currentY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+      const deltaY = currentY - startY;
 
-        let newTop = startTop + deltaY;
-        // Evitar que se salga por arriba o abajo
-        const limit = window.innerHeight - container.offsetHeight;
-        newTop = Math.max(0, Math.min(limit, newTop));
-        
-        container.style.top = newTop + 'px';
-        container.style.bottom = 'auto'; // Reseteamos bottom por si acaso
-      };
+      if (Math.abs(deltaY) > 8) {
+        isDragging = true;
+        panel.style.left = '-300px'; 
+        panel.style.opacity = '0';
+      }
 
-      const endAction = () => {
-        const duration = Date.now() - startTime;
-        
-        // Si no hubo arrastre o fue un toque muy rápido, abrimos/cerramos
-        if (!isDragging || duration < 200) {
-          const isOpen = panel.style.left === '45px';
-          panel.style.left = isOpen ? '-280px' : '45px';
-        }
+      let newTop = startTop + deltaY;
+      const limit = window.innerHeight - container.offsetHeight;
+      newTop = Math.max(0, Math.min(limit, newTop));
+      
+      container.style.top = newTop + 'px';
+    };
 
-        startY = undefined;
-        button.style.cursor = 'grab';
-      };
+    const onEnd = () => {
+      const duration = Date.now() - startTime;
+      button.style.transform = 'scale(1)';
+      
+      if (!isDragging || duration < 180) {
+        const isOpen = panel.style.left === '42px';
+        panel.style.left = isOpen ? '-300px' : '42px';
+        panel.style.opacity = isOpen ? '0' : '1';
+      }
 
-      // Eventos para PC
-      button.addEventListener('mousedown', startAction);
-      window.addEventListener('mousemove', moveAction);
-      window.addEventListener('mouseup', endAction);
+      startY = undefined;
+      button.style.cursor = 'grab';
+    };
 
-      // Eventos para Móvil
-      button.addEventListener('touchstart', startAction, { passive: true });
-      window.addEventListener('touchmove', moveAction, { passive: false });
-      window.addEventListener('touchend', endAction);
-    })();
-  </script>
+    button.addEventListener('mousedown', onStart);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onEnd);
+    button.addEventListener('touchstart', onStart, { passive: true });
+    window.addEventListener('touchmove', onMove, { passive: false });
+    window.addEventListener('touchend', onEnd);
+  })();
+</script>
 
+   
 
 
 
