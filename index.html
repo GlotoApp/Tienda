@@ -378,6 +378,84 @@
 </div>
 
   </footer>
+  
+  
+    <div id="tab-master-container" style="position: fixed; left: 0; top: 50%; z-index: 10001; display: flex; align-items: center; touch-action: none;">
+    
+    <div id="drag-button" style="background-color: #25D366; color: white; padding: 15px 10px; border-radius: 0 10px 10px 0; cursor: grab; box-shadow: 2px 2px 10px rgba(0,0,0,0.3); user-select: none; font-weight: bold; font-size: 18px;">
+      ❯
+    </div>
+    
+    <div id="info-panel" style="position: absolute; left: -280px; width: 240px; background: white; padding: 20px; border-radius: 0 15px 15px 0; box-shadow: 5px 5px 15px rgba(0,0,0,0.2); transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; gap: 12px; border: 1px solid #eee; pointer-events: auto;">
+      <p style="margin: 0; color: #333; font-weight: bold; font-family: sans-serif; font-size: 16px;">¿Quieres una tienda como esta?</p>
+      <a href="https://wa.me/tu-numero-aqui" target="_blank" style="background-color: #25D366; color: white; text-decoration: none; padding: 12px; text-align: center; border-radius: 8px; font-weight: bold; font-family: sans-serif; font-size: 14px; box-shadow: 0 4px 6px rgba(37, 211, 102, 0.2);">
+        Contactar por WhatsApp
+      </a>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const container = document.getElementById('tab-master-container');
+      const button = document.getElementById('drag-button');
+      const panel = document.getElementById('info-panel');
+
+      let isDragging = false;
+      let startY, startTop, startTime;
+
+      const startAction = (e) => {
+        isDragging = false;
+        startY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+        startTop = container.offsetTop;
+        startTime = Date.now();
+        button.style.cursor = 'grabbing';
+      };
+
+      const moveAction = (e) => {
+        if (startY === undefined) return;
+        const currentY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+        const deltaY = currentY - startY;
+
+        // Si se mueve más de 10px, detectamos que es arrastre y no click
+        if (Math.abs(deltaY) > 10) {
+          isDragging = true;
+          panel.style.left = '-280px'; // Cerramos el panel si se está moviendo
+        }
+
+        let newTop = startTop + deltaY;
+        // Evitar que se salga por arriba o abajo
+        const limit = window.innerHeight - container.offsetHeight;
+        newTop = Math.max(0, Math.min(limit, newTop));
+        
+        container.style.top = newTop + 'px';
+        container.style.bottom = 'auto'; // Reseteamos bottom por si acaso
+      };
+
+      const endAction = () => {
+        const duration = Date.now() - startTime;
+        
+        // Si no hubo arrastre o fue un toque muy rápido, abrimos/cerramos
+        if (!isDragging || duration < 200) {
+          const isOpen = panel.style.left === '45px';
+          panel.style.left = isOpen ? '-280px' : '45px';
+        }
+
+        startY = undefined;
+        button.style.cursor = 'grab';
+      };
+
+      // Eventos para PC
+      button.addEventListener('mousedown', startAction);
+      window.addEventListener('mousemove', moveAction);
+      window.addEventListener('mouseup', endAction);
+
+      // Eventos para Móvil
+      button.addEventListener('touchstart', startAction, { passive: true });
+      window.addEventListener('touchmove', moveAction, { passive: false });
+      window.addEventListener('touchend', endAction);
+    })();
+  </script>
+
 
 
 
