@@ -380,23 +380,25 @@
   </footer>
   
 
-<div id="tienda-fix-container" style="position: fixed; left: 0; bottom: 20px; z-index: 999999; font-family: sans-serif;">
+<div id="tienda-fix-container" style="position: fixed; left: 0; bottom: 80px; z-index: 999999; font-family: sans-serif;">
   
-  <div id="tienda-open-btn" style="background: #25D366; color: white; width: 45px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 0 10px 10px 0; cursor: pointer; box-shadow: 2px 2px 15px rgba(0,0,0,0.2); font-size: 20px; user-select: none; -webkit-tap-highlight-color: transparent;">
-    ❯
+  <div id="tienda-open-btn" style="background: linear-gradient(90deg, #25D366, #128c7e); color: white; width: 28px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 0 15px 15px 0; cursor: pointer; box-shadow: 2px 2px 8px rgba(0,0,0,0.15); font-size: 14px; user-select: none; -webkit-tap-highlight-color: transparent; border-left: none;">
+    <span style="margin-left: -2px;">❯</span>
   </div>
   
-  <div id="tienda-info-panel" style="position: absolute; bottom: 0; left: -320px; width: 280px; background: white; padding: 25px 20px; border-radius: 0 20px 20px 0; box-shadow: 10px 0 30px rgba(0,0,0,0.2); transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #eee; display: flex; flex-direction: column; gap: 15px;">
+  <div id="tienda-info-panel" style="position: absolute; bottom: 0; left: -320px; width: 260px; background: white; padding: 22px 18px; border-radius: 0 20px 20px 0; box-shadow: 10px 0 30px rgba(0,0,0,0.15); transition: left 0.4s cubic-bezier(0.25, 1, 0.5, 1); border: 1px solid #f0f0f0; display: flex; flex-direction: column; gap: 12px;">
     
-    <span id="tienda-close-x" style="position: absolute; top: 10px; right: 15px; cursor: pointer; font-size: 28px; color: #bbb; line-height: 1; font-weight: bold; padding: 5px; user-select: none;">&times;</span>
+    <span id="tienda-close-x" style="position: absolute; top: 8px; right: 12px; cursor: pointer; font-size: 24px; color: #d1d1d1; line-height: 1; font-weight: bold; padding: 5px; user-select: none;">&times;</span>
 
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <div style="background: #25D366; width: 10px; height: 10px; border-radius: 50%;"></div>
-        <h4 style="margin: 0; color: #333; font-size: 16px;">¿Quieres una tienda así?</h4>
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="background: #25D366; width: 8px; height: 8px; border-radius: 50%;"></div>
+        <h4 style="margin: 0; color: #1a1a1a; font-size: 15px; font-weight: 700;">¿Quieres una tienda así?</h4>
     </div>
+
+    <p style="margin: 0; color: #777; font-size: 13px; line-height: 1.4;">Crea tu propio catálogo digital y recibe pedidos directo al WhatsApp.</p>
     
-    <a href="https://wa.me/573024345404" target="_blank" style="background: #25D366; color: white; text-decoration: none; padding: 14px; text-align: center; border-radius: 10px; font-weight: bold; font-size: 14px; display: block;">
-      Créala aquí
+    <a href="https://wa.me/573024345404" target="_blank" style="background: #25D366; color: white; text-decoration: none; padding: 12px; text-align: center; border-radius: 12px; font-weight: bold; font-size: 13px; display: block; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2);">
+      ¡La quiero ahora!
     </a>
   </div>
 </div>
@@ -407,26 +409,20 @@
     const panel = document.getElementById('tienda-info-panel');
     const closeX = document.getElementById('tienda-close-x');
 
-    // Al hacer clic en la flecha
     openBtn.addEventListener('click', function() {
-      // 1. Abrimos el panel
       panel.style.left = '0px';
-      // 2. Desaparecemos la flecha por completo del DOM
-      openBtn.style.display = 'none';
+      openBtn.style.display = 'none'; // Desaparece al abrir
     });
 
-    // Al hacer clic en la X
     closeX.addEventListener('click', function() {
-      // 1. Cerramos el panel
       panel.style.left = '-320px';
-      
-      // 2. Esperamos a que el panel se retire para mostrar la flecha de nuevo
       setTimeout(() => {
-        openBtn.style.display = 'flex';
-      }, 300); // Mismo tiempo que la transición del panel
+        openBtn.style.display = 'flex'; // Reaparece al cerrar
+      }, 400); 
     });
   })();
 </script>
+
 
 
 
