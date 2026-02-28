@@ -379,25 +379,27 @@
 
   </footer>
   
+
+<div id="ui-tab-container" style="position: fixed; left: 0; top: 50%; z-index: 99999; display: flex; align-items: center; touch-action: none;">
   
-  <div id="ui-tab-container" style="position: fixed; left: 0; top: 50%; z-index: 99999; display: flex; align-items: center; touch-action: none; transition: transform 0.2s ease;">
-  
-  <div id="ui-drag-button" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: white; width: 42px; height: 55px; display: flex; align-items: center; justify-content: center; border-radius: 0 12px 12px 0; cursor: grab; box-shadow: 4px 0 15px rgba(0,0,0,0.15); user-select: none; font-size: 20px; border-right: 1px solid rgba(255,255,255,0.2);">
-    <span style="transform: translateX(2px);">❯</span>
+  <div id="ui-drag-button" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: white; width: 42px; height: 55px; display: flex; align-items: center; justify-content: center; border-radius: 0 12px 12px 0; cursor: grab; box-shadow: 4px 0 15px rgba(0,0,0,0.2); user-select: none; font-size: 20px;">
+    <span id="tab-icon">❯</span>
   </div>
   
-  <div id="ui-info-panel" style="position: absolute; left: -300px; width: 260px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: 22px; border-radius: 0 20px 20px 0; box-shadow: 10px 0 30px rgba(0,0,0,0.1); transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; flex-direction: column; gap: 15px; border: 1px solid rgba(255,255,255,0.5); pointer-events: auto;">
+  <div id="ui-info-panel" style="position: absolute; left: -300px; width: 260px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 25px 20px 20px; border-radius: 0 20px 20px 0; box-shadow: 10px 0 30px rgba(0,0,0,0.15); transition: left 0.25s ease-out; display: flex; flex-direction: column; gap: 12px; border: 1px solid rgba(0,0,0,0.05); pointer-events: auto;">
     
-    <div style="display: flex; align-items: center; gap: 10px;">
-        <div style="background: #25D366; width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 8px #25D366;"></div>
-        <p style="margin: 0; color: #1a1a1a; font-weight: 700; font-family: 'Segoe UI', Roboto, sans-serif; font-size: 15px; letter-spacing: -0.3px;">¿Te gusta esta tienda?</p>
+    <span id="close-panel" style="position: absolute; top: 8px; right: 12px; cursor: pointer; font-size: 18px; color: #999; font-family: sans-serif; font-weight: bold;">&times;</span>
+
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="background: #25D366; width: 8px; height: 8px; border-radius: 50%;"></div>
+        <p style="margin: 0; color: #1a1a1a; font-weight: 700; font-family: sans-serif; font-size: 15px;">¿Quieres una tienda así?</p>
     </div>
 
-    <p style="margin: 0; color: #555; font-family: 'Segoe UI', sans-serif; font-size: 13px; line-height: 1.4;">Impulsa tu negocio con un menú digital interactivo y profesional.</p>
+    <p style="margin: 0; color: #444; font-family: sans-serif; font-size: 13px; line-height: 1.4;">Crea tu propio catálogo digital profesional hoy mismo.</p>
     
-    <a href="https://wa.me/573000000000" target="_blank" style="background: #25D366; color: white; text-decoration: none; padding: 12px; text-align: center; border-radius: 10px; font-weight: 600; font-family: sans-serif; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.2s ease; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="18" height="18" alt="W">
-      Hablar con un asesor
+    <a href="https://wa.me/573000000000" target="_blank" style="background: #25D366; color: white; text-decoration: none; padding: 12px; text-align: center; border-radius: 10px; font-weight: 600; font-family: sans-serif; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="16" height="16" alt="W">
+      Pedir información
     </a>
   </div>
 </div>
@@ -407,57 +409,62 @@
     const container = document.getElementById('ui-tab-container');
     const button = document.getElementById('ui-drag-button');
     const panel = document.getElementById('ui-info-panel');
+    const closeBtn = document.getElementById('close-panel');
+    const icon = document.getElementById('tab-icon');
 
     let isDragging = false;
-    let startY, startTop, startTime;
+    let startY, startTop, moveDistance = 0;
+
+    const togglePanel = (forceClose = false) => {
+      const isOpen = panel.style.left === '42px';
+      if (isOpen || forceClose) {
+        panel.style.left = '-300px';
+        icon.innerText = '❯';
+      } else {
+        panel.style.left = '42px';
+        icon.innerText = '❮';
+      }
+    };
 
     const onStart = (e) => {
-      isDragging = false;
       startY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
       startTop = container.offsetTop;
-      startTime = Date.now();
+      moveDistance = 0;
+      isDragging = false;
       button.style.cursor = 'grabbing';
-      button.style.transform = 'scale(0.95)';
     };
 
     const onMove = (e) => {
       if (startY === undefined) return;
       const currentY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
       const deltaY = currentY - startY;
+      moveDistance = Math.abs(deltaY);
 
-      if (Math.abs(deltaY) > 8) {
+      if (moveDistance > 10) {
         isDragging = true;
-        panel.style.left = '-300px'; 
-        panel.style.opacity = '0';
+        togglePanel(true); // Cerrar si se arrastra
+        let newTop = startTop + deltaY;
+        const limit = window.innerHeight - container.offsetHeight;
+        container.style.top = Math.max(0, Math.min(limit, newTop)) + 'px';
       }
-
-      let newTop = startTop + deltaY;
-      const limit = window.innerHeight - container.offsetHeight;
-      newTop = Math.max(0, Math.min(limit, newTop));
-      
-      container.style.top = newTop + 'px';
     };
 
     const onEnd = () => {
-      const duration = Date.now() - startTime;
-      button.style.transform = 'scale(1)';
-      
-      if (!isDragging || duration < 180) {
-        const isOpen = panel.style.left === '42px';
-        panel.style.left = isOpen ? '-300px' : '42px';
-        panel.style.opacity = isOpen ? '0' : '1';
+      if (!isDragging && moveDistance < 10) {
+        togglePanel();
       }
-
       startY = undefined;
       button.style.cursor = 'grab';
     };
 
+    // Eventos
     button.addEventListener('mousedown', onStart);
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onEnd);
     button.addEventListener('touchstart', onStart, { passive: true });
     window.addEventListener('touchmove', onMove, { passive: false });
     window.addEventListener('touchend', onEnd);
+    closeBtn.addEventListener('click', (e) => { e.stopPropagation(); togglePanel(true); });
   })();
 </script>
 
