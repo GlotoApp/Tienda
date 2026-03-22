@@ -72,7 +72,7 @@
        SIDEBAR (ESTILO CIERRE_CAJA)
        ================================ */
         .sidebar {
-            background: #212133;  
+            background: #212133;
             position: sticky;
             top: 20px;
             height: calc(100vh - 40px);
@@ -83,7 +83,7 @@
             padding: 22px;
         }
 
-        
+
 
         .brand {
             display: flex;
@@ -143,17 +143,23 @@
             padding: 10px 12px;
             border-radius: 8px;
             font-weight: 600;
-            transition: background .18s, color .18s;
+            transition: background .18s, color .18s, border-color .18s;
+            border-left: 4px solid transparent;
         }
 
         .nav-link.active {
             background: var(--primary);
             color: var(--input);
+            border-left: 4px solid var(--success);
         }
 
         .nav-link:hover {
-            background: var(--input);
+            background: rgba(91, 192, 222, 0.1);
             color: var(--primary)
+        }
+
+        .nav-link:not(.active):hover {
+            border-left: 4px solid var(--primary);
         }
 
         /* Botón principal (Estilo CIERRE_CAJA) */
@@ -218,15 +224,16 @@
             justify-content: space-between;
             padding: 18px 20px;
             border-radius: 12px;
-background: linear-gradient(90deg, #181822, #232332);
+            background: linear-gradient(90deg, #181822, #232332);
         }
 
-        
+
         @media (max-width: 899px) {
-    .topbar {
-        display: flex;  /* ahora sí aparece en móvil */
-    }
-}
+            .topbar {
+                display: flex;
+                /* ahora sí aparece en móvil */
+            }
+        }
 
         .topbar-left {
             display: flex;
@@ -384,6 +391,7 @@ background: linear-gradient(90deg, #181822, #232332);
             font-size: 1rem;
             padding: 0;
         }
+
         /* ------------------------------------- */
 
         .kpi-row {
@@ -416,19 +424,19 @@ background: linear-gradient(90deg, #181822, #232332);
         }
 
         /* GRID PRODUCTS (ESTILO CIERRE_CAJA) */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 16px;
-    padding-top: 10px;
-}
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            padding-top: 10px;
+        }
 
-/* SOLO en móviles → forzar 2 columnas */
-@media (max-width: 600px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
+        /* SOLO en móviles → forzar 2 columnas */
+        @media (max-width: 600px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
 
 
         .card {
@@ -484,7 +492,7 @@ background: linear-gradient(90deg, #181822, #232332);
             color: var(--warning);
             font-size: 1.1rem;
         }
-        
+
 
         .card-body h3 {
             margin: 0;
@@ -526,21 +534,23 @@ background: linear-gradient(90deg, #181822, #232332);
             backdrop-filter: blur(4px);
         }
 
-.modal-content {
-    position: relative;
-    width: 100%;
-    max-width: 600px;
-    /* --- INICIO DE MODIFICACIONES PARA SCROLL --- */
-    max-height: 90vh; /* Máximo 90% de la altura de la vista */
-    overflow-y: auto; /* Habilita el scroll vertical cuando el contenido es mayor */
-    /* --- FIN DE MODIFICACIONES --- */
-    background: var(--card);
-    border-radius: 14px;
-    padding: 18px;
-    z-index: 2;
-    border: 1px solid var(--line);
-    box-shadow: var(--shadow-1);
-}
+        .modal-content {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            /* --- INICIO DE MODIFICACIONES PARA SCROLL --- */
+            max-height: 90vh;
+            /* Máximo 90% de la altura de la vista */
+            overflow-y: auto;
+            /* Habilita el scroll vertical cuando el contenido es mayor */
+            /* --- FIN DE MODIFICACIONES --- */
+            background: var(--card);
+            border-radius: 14px;
+            padding: 18px;
+            z-index: 2;
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow-1);
+        }
 
         .modal-content img {
             width: 100%;
@@ -549,6 +559,282 @@ background: linear-gradient(90deg, #181822, #232332);
             border-radius: 10px;
             margin-bottom: 12px;
             border: 1px solid var(--line);
+        }
+
+        /* ================================
+       ESTILOS PARA GESTOR DE IMÁGENES
+       ================================ */
+        .image-manager-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: var(--glass);
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: var(--input);
+            display: block;
+        }
+
+        /* 📦 DROPZONE PARA CARGA NATIVA */
+        .image-dropzone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            border: 2px dashed var(--primary);
+            border-radius: 12px;
+            background: rgba(91, 192, 222, 0.05);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 180px;
+        }
+
+        .image-dropzone:hover {
+            border-color: var(--accent);
+            background: rgba(91, 192, 222, 0.1);
+            transform: scale(1.02);
+        }
+
+        .image-dropzone.dragover {
+            border-color: var(--success);
+            background: rgba(99, 212, 113, 0.1);
+        }
+
+        .image-dropzone p {
+            margin: 0;
+            text-align: center;
+        }
+
+        .image-manager-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-select-image,
+        .btn-clear-image {
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: background .18s, transform .12s;
+        }
+
+        .btn-select-image {
+            background: var(--primary);
+            color: var(--input);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-select-image:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .btn-clear-image {
+            background: var(--danger);
+            color: var(--text);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-clear-image:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-select-image:active,
+        .btn-clear-image:active {
+            transform: translateY(0);
+        }
+
+        /* ================================
+       GALERÍA DE IMÁGENES RECICLABLES
+       ================================ */
+
+        /* 🖼️ ACCESO RÁPIDO A GALERÍA DESDE MODAL */
+        .btn-gallery-shortcut {
+            width: 100%;
+            padding: 12px;
+            border-radius: var(--radius, 8px);
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.95rem;
+            background: linear-gradient(135deg, var(--primary), rgba(91, 192, 222, 0.8));
+            color: var(--input);
+            box-shadow: 0 4px 12px rgba(38, 126, 255, 0.25);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-gallery-shortcut:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(38, 126, 255, 0.35);
+        }
+
+        .btn-gallery-shortcut:active {
+            transform: scale(0.96);
+        }
+
+        /* Modal con scroll para galería */
+        .gallery-modal-content {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        /* Grid de galerías */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color .18s, transform .12s, box-shadow .18s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            background: var(--input);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+        }
+
+        .gallery-item.selected {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary), 0 6px 16px rgba(0, 0, 0, 0.45);
+        }
+
+        .gallery-item::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity .18s;
+        }
+
+        .gallery-item:hover::after {
+            opacity: 1;
+        }
+
+        .gallery-item.selected::after {
+            opacity: 0;
+        }
+
+        .gallery-loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+        }
+
+        /* ================================
+       ASSETS MANAGEMENT - Grid con checkbox
+       ================================ */
+        .asset-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid var(--line);
+            transition: all .18s;
+            background: var(--input);
+            cursor: pointer;
+        }
+
+        .asset-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .asset-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+            border-color: var(--primary);
+        }
+
+        .asset-checkbox {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            z-index: 10;
+            appearance: none;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid var(--line);
+            border-radius: 4px;
+            transition: all .15s;
+        }
+
+        .asset-checkbox:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(91, 192, 222, 0.2);
+        }
+
+        .asset-checkbox:checked {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .asset-checkbox:checked::after {
+            content: '✔';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            color: var(--input);
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .asset-item.selected {
+            border-color: var(--primary);
+            box-shadow: inset 0 0 0 3px var(--primary);
+        }
+
+        .asset-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(91, 192, 222, 0.2);
+            opacity: 0;
+            transition: opacity .15s;
+            z-index: 5;
+        }
+
+        .asset-item.selected::before {
+            opacity: 1;
         }
 
         .close-span {
@@ -785,68 +1071,73 @@ background: linear-gradient(90deg, #181822, #232332);
         /* ================================
    ESTILOS PARA EL SWITCH (SUICHE)
    ================================ */
-.switch-container {
-    /* Ajusta el layout del estado y el switch */
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
+        .switch-container {
+            /* Ajusta el layout del estado y el switch */
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 50px; /* Ancho del switch */
-    height: 28px; /* Alto del switch */
-}
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            /* Ancho del switch */
+            height: 28px;
+            /* Alto del switch */
+        }
 
-/* Ocultar el checkbox por defecto */
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
+        /* Ocultar el checkbox por defecto */
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
 
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--danger); /* Color Inactivo: Rojo */
-    transition: .4s;
-    border-radius: 28px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
-}
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--danger);
+            /* Color Inactivo: Rojo */
+            transition: .4s;
+            border-radius: 28px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+        }
 
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 4px;
-    bottom: 4px;
-    background-color: var(--text); /* Círculo interior */
-    transition: .4s;
-    border-radius: 50%;
-}
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: var(--text);
+            /* Círculo interior */
+            transition: .4s;
+            border-radius: 50%;
+        }
 
-/* Cambiar a color Success (Verde) cuando está checked */
-input:checked + .slider {
-    background-color: var(--success);
-}
+        /* Cambiar a color Success (Verde) cuando está checked */
+        input:checked+.slider {
+            background-color: var(--success);
+        }
 
-/* Mover el círculo (thumb) a la derecha */
-input:checked + .slider:before {
-    transform: translateX(22px);
-}
+        /* Mover el círculo (thumb) a la derecha */
+        input:checked+.slider:before {
+            transform: translateX(22px);
+        }
 
-/* Ajuste para el label de texto */
-.activo-label {
-    font-weight: 700;
-    /* Eliminamos el color fijo de la versión anterior para que lo controle JS */
-}
+        /* Ajuste para el label de texto */
+        .activo-label {
+            font-weight: 700;
+            /* Eliminamos el color fijo de la versión anterior para que lo controle JS */
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -857,9 +1148,14 @@ input:checked + .slider:before {
             <div>
                 <div class="section-title" style="margin-top:0">Productos</div>
                 <nav class="nav">
-                    <a href="productos2.html" class="nav-link active">
+                    <button id="gestorBtn" class="nav-link active"
+                        style="justify-content: flex-start;  border:none; cursor:pointer;">
                         📦 Gestor de Productos
-                    </a>
+                    </button>
+                    <button id="galeriaNavBtn" class="nav-link"
+                        style="justify-content: flex-start; background:none; border:none; cursor:pointer;">
+                        🖼️ Banco de Imágenes
+                    </button>
                     <button id="addProductBtn" class="nav-link"
                         style="justify-content: flex-start; background:none; border:none; cursor:pointer;">
                         ➕ Añadir Producto
@@ -888,7 +1184,7 @@ input:checked + .slider:before {
                     </div>
                 </div>
                 <div class="topbar-actions">
-                    </div>
+                </div>
             </div>
 
             <div class="content-area">
@@ -909,7 +1205,7 @@ input:checked + .slider:before {
                             <label for="filterCategory">Categoría:</label>
                             <select id="filterCategory" aria-label="Filtrar por categoría">
                                 <option value="all">Todas</option>
-                                </select>
+                            </select>
                         </div>
                     </div>
 
@@ -922,7 +1218,8 @@ input:checked + .slider:before {
                                 <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2"
                                     stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
-                            <input id="search" placeholder="Buscar nombre o descripción..." aria-label="Buscar productos">
+                            <input id="search" placeholder="Buscar nombre o descripción..."
+                                aria-label="Buscar productos">
                         </div>
                     </div>
                 </div>
@@ -950,9 +1247,24 @@ input:checked + .slider:before {
                     </div>
                 </div>
 
-                <section>
+                <section id="productosSeccion">
                     <div id="productGrid" class="grid" aria-live="polite">
                     </div>
+                </section>
+
+                <!-- 🖼️ NUEVA SECCIÓN: GALERÍA DE ACTIVOS -->
+                <section id="galeriaSeccion" style="display:none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <h2 style="margin:0; color:var(--primary);">🖼️ Galería de Activos</h2>
+                        <div style="display:flex; gap:10px;">
+                            <button id="uploadMultipleBtn" class="btn-select-image">⬆️ Subir Masivamente</button>
+                            <button id="deleteMultipleBtn" class="btn-clear-image" style="opacity:0.5; cursor:not-allowed;" disabled>🗑️ Borrar</button>
+                        </div>
+                    </div>
+                    <div id="galeriaActivos" class="gallery-grid" style="margin-top:20px;">
+                        <!-- Se llena dinámicamente -->
+                    </div>
+                    <input id="uploadMultipleInput" type="file" multiple accept="image/*" style="display:none;">
                 </section>
             </div>
         </main>
@@ -963,9 +1275,26 @@ input:checked + .slider:before {
         <div class="modal-content" role="document">
             <span id="closeModal" class="close-span" title="Cerrar">&times;</span>
 
-            <img id="modalImg" src="https://mrgeorge2022.github.io/Uploader/imagenes/default.jpg" alt="Imagen producto">
 
-            <h2 style="margin:0 0 8px 0; color:var(--primary);">🛠️ Editor de Producto</h2>
+
+            <div class="modal-section">
+                <label>Imagen del Producto</label>
+                <div id="dropzone" class="image-dropzone">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style="opacity:0.6; margin-bottom:8px;">
+                        <path d="M12 2L2 12h3v8h14v-8h3L12 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </svg>
+                    <p style="margin:0; color:var(--text); font-weight:600;">Arrastra o toca para subir</p>
+                    <p style="margin:6px 0 0 0; color:var(--muted); font-size:0.9rem;">.png, .jpg, .jpeg</p>
+                </div>
+                <img id="previewImg" src="https://mrgeorge2022.github.io/Uploader/imagenes/default.jpg"
+                alt="Vista previa" class="image-preview" style="display:none;">
+                <div class="image-manager-buttons" style="display:none;">
+                    <button type="button" id="changeImageBtn" class="btn-select-image">🔄 Cambiar</button>
+                    <button type="button" id="clearImageBtn" class="btn-clear-image">❌ Eliminar</button>
+                </div>
+                <button type="button" id="quickGalleryBtn" class="btn-gallery-shortcut" style="margin-top:12px; margin-bottom:12px;">🖼️ Seleccionar de mi Banco de Imágenes</button>
+                <input id="editImagenFile" type="file" accept="image/*" capture="environment" style="display: none;">
+            </div>
 
             <div class="modal-section">
                 <label>ID</label>
@@ -977,23 +1306,16 @@ input:checked + .slider:before {
                 <input id="editNombre" placeholder="Nombre del producto">
             </div>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div>
                 <div class="modal-section">
                     <label>Categoría</label>
                     <select id="editCategoria">
-                        </select>
+                    </select>
                     <input type="text" id="editCategoriaCustom" placeholder="Escriba la nueva categoría aquí"
                         style="display:none; margin-top: 10px;">
                 </div>
 
-                <div class="modal-section">
-                    <label>Configuración</label>
-                    <select id="editConfig">
-                        <option value="">(Sin configuración)</option>
-                        <option value="manualpizza">Para Pizzas 🍕</option>
-                        <option value="manualalmuerzo">Para Almuerzos 🍛</option>
-                    </select>
-                </div>
+
             </div>
 
             <div class="modal-section">
@@ -1001,31 +1323,107 @@ input:checked + .slider:before {
                 <input id="editPrecio" placeholder="0" type="number" step="0.01">
             </div>
 
-            <div class="modal-section">
-                <label>URL Imagen</label>
-                <input id="editImagen" placeholder="https://..." type="text">
-            </div>
+
+
+            <input id="editImagen" type="hidden" value="">
 
             <div class="modal-section">
                 <label>Descripción</label>
                 <textarea id="editDescripcion" placeholder="Descripción del producto"></textarea>
             </div>
 
-<div style="display:flex; align-items:center; gap:8px; justify-content:space-between;">
-    <div class="switch-container">
-        <span id="activoLabel" class="activo-label">Estado:</span>
+            <div style="display:flex; align-items:center; gap:8px; justify-content:space-between;">
+                <div class="switch-container">
+                    <span id="activoLabel" class="activo-label">Estado:</span>
 
-        <label class="switch">
-            <input type="checkbox" id="editActivo">
-            <span class="slider"></span>
-        </label>
+                    <label class="switch">
+                        <input type="checkbox" id="editActivo">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="modal-buttons" style="margin-left:12px; display:flex; gap:10px;">
+                    <button id="saveBtn">Guardar</button>
+                    <button id="deleteBtn" class="delete-btn">Eliminar</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="modal-buttons" style="margin-left:12px; display:flex; gap:10px;">
-        <button id="saveBtn">Guardar</button>
-        <button id="deleteBtn" class="delete-btn">Eliminar</button>
+    <!-- 🖼️ MODAL: GALERÍA DE IMÁGENES (Para seleccionar imagen en producto) -->
+    <div id="galleryModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal-backdrop" onclick="document.getElementById('galleryModal').style.display='none'"></div>
+        <div class="modal-content gallery-modal-content" role="document">
+            <span class="close-span" id="closeGalleryModal" title="Cerrar">&times;</span>
+
+            <h2 style="margin:0 0 16px 0; color:var(--primary);">🖼️ Seleccionar Imagen Reciclable</h2>
+            <p style="color:var(--muted); font-size:0.9rem; margin:0 0 16px 0;">
+                Selecciona una imagen existente de tu negocio para este producto.
+            </p>
+
+            <!-- Grid de imágenes de galería -->
+            <div id="galleryGrid" class="gallery-grid" aria-label="Imágenes disponibles">
+                <!-- Se llena dinámicamente con JavaScript -->
+            </div>
+
+            <!-- Loader dentro de galería -->
+            <div id="galleryLoading" class="gallery-loading" style="display:none; text-align:center; padding:40px; color:var(--muted);">
+                <div class="spinner"></div>
+                <p>Cargando imágenes...</p>
+            </div>
+        </div>
     </div>
-</div>
+
+    <!-- 📦 MODAL: GESTIÓN DE ACTIVOS (NUEVO - Para administrar el banco de imágenes) -->
+    <div id="assetsManagementModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal-backdrop" onclick="document.getElementById('assetsManagementModal').style.display='none'"></div>
+        <div class="modal-content" style="max-width:1000px; max-height:90vh; overflow-y:auto;" role="document">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--line);">
+                <div>
+                    <h2 style="margin:0; color:var(--primary); font-size:1.4rem;">🖼️ Banco de Imágenes</h2>
+                    <p style="margin:4px 0 0 0; color:var(--muted); font-size:0.9rem;">Gestiona todas tus imágenes de activos</p>
+                </div>
+                <span class="close-span" id="closeAssetsModal" title="Cerrar" style="font-size:28px; cursor:pointer;">&times;</span>
+            </div>
+
+            <!-- BUSCADOR -->
+            <div style="display:flex; gap:12px; margin-bottom:20px; align-items:center;">
+                <div style="flex:1;">
+                    <input id="assetsSearchInput" type="text" placeholder="🔍 Buscar imágenes..." style="width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--input); color:var(--text); font-size:0.95rem;">
+                </div>
+            </div>
+
+            <!-- PANEL DE ACCIONES -->
+            <div style="display:flex; gap:12px; margin-bottom:20px; align-items:center; padding:12px; background:rgba(91,192,222,0.05); border-radius:8px; border:1px solid var(--line);">
+                <input id="selectAllAssets" type="checkbox" style="width:20px; height:20px; cursor:pointer;">
+                <label for="selectAllAssets" style="margin:0; cursor:pointer; color:var(--text); font-weight:600;">Seleccionar Todo</label>
+                
+                <span style="margin-left:auto; color:var(--muted); font-size:0.95rem;">
+                    <span id="assetsSelectedCount">0</span> imagen(es) seleccionada(s)
+                </span>
+
+                <button id="deleteAssetsBtn" class="btn-clear-image" style="margin-left:12px; padding:10px 16px; cursor:not-allowed; opacity:0.5;" disabled>
+                    🗑️ Eliminar Seleccionados
+                </button>
+            </div>
+
+            <!-- GRID DE IMÁGENES -->
+            <div id="assetsGrid" class="gallery-grid" style="margin-bottom:20px;">
+                <!-- Se llena dinámicamente -->
+            </div>
+
+            <!-- LOADER -->
+            <div id="assetsLoading" style="display:none; text-align:center; padding:40px; color:var(--muted);">
+                <div class="spinner"></div>
+                <p>Cargando imágenes...</p>
+            </div>
+
+            <!-- MENSAJE VACÍO -->
+            <div id="assetsEmpty" style="display:none; text-align:center; padding:60px 20px; color:var(--muted);">
+                <div style="font-size:48px; margin-bottom:12px;">📭</div>
+                <p style="font-size:1.1rem; margin:0;">Sin imágenes en el banco</p>
+                <p style="margin:8px 0 0 0; font-size:0.95rem;">Sube imágenes para comenzar a construir tu banco de activos</p>
+            </div>
         </div>
     </div>
 
@@ -1037,59 +1435,359 @@ input:checked + .slider:before {
     </div>
 
     <script>
-    let API_URL; // Se cargará desde config.json
-    const DEFAULT_IMG = "https://mrgeorge2022.github.io/Uploader/imagenes/default.jpg";
-    let products = [];
-    let isNewProduct = false;
+        let API_URL; // Se cargará desde config.json
+        const DEFAULT_IMG = "https://mrgeorge2022.github.io/Uploader/imagenes/default.jpg";
+        let products = [];
+        let isNewProduct = false;
 
-    // Referencias DOM
-    const loader = document.getElementById("loaderOverlay");
-    const loaderText = document.getElementById("loaderText");
-    const modal = document.getElementById("productModal");
-    const saveBtn = document.getElementById("saveBtn");
-    const deleteBtn = document.getElementById("deleteBtn");
-    const closeModalSpan = document.getElementById("closeModal");
-    const addProductBtn = document.getElementById("addProductBtn");
-    const searchInput = document.getElementById("search");
-    const editImagenInput = document.getElementById("editImagen");
-    const editActivoCheckbox = document.getElementById("editActivo");
-    const modalImg = document.getElementById("modalImg");
-    const activoLabel = document.getElementById("activoLabel");
+        // Referencias DOM
+        const loader = document.getElementById("loaderOverlay");
+        const loaderText = document.getElementById("loaderText");
+        const modal = document.getElementById("productModal");
+        const saveBtn = document.getElementById("saveBtn");
+        const deleteBtn = document.getElementById("deleteBtn");
+        const closeModalSpan = document.getElementById("closeModal");
+        const addProductBtn = document.getElementById("addProductBtn");
+        const gestorBtn = document.getElementById("gestorBtn");
+        const galeriaNavBtn = document.getElementById("galeriaNavBtn");
+        const productosSeccion = document.getElementById("productosSeccion");
+        const galeriaSeccion = document.getElementById("galeriaSeccion");
+        const searchInput = document.getElementById("search");
+        const editImagenInput = document.getElementById("editImagen");
+        const editImagenFileInput = document.getElementById("editImagenFile");
+        const previewImg = document.getElementById("previewImg");
+        const dropzone = document.getElementById("dropzone");
+        const changeImageBtn = document.getElementById("changeImageBtn");
+        const clearImageBtn = document.getElementById("clearImageBtn");
+        const imageManagerButtons = document.querySelector(".image-manager-buttons");
+        const quickGalleryBtn = document.getElementById("quickGalleryBtn");
+        const galleryModal = document.getElementById("galleryModal");
+        const closeGalleryModal = document.getElementById("closeGalleryModal");
+        const galleryGrid = document.getElementById("galleryGrid");
+        const galleryLoading = document.getElementById("galleryLoading");
+        
+        // ASSETS MANAGEMENT MODAL (Nuevo)
+        const assetsManagementModal = document.getElementById("assetsManagementModal");
+        const closeAssetsModal = document.getElementById("closeAssetsModal");
+        const assetsGrid = document.getElementById("assetsGrid");
+        const assetsLoading = document.getElementById("assetsLoading");
+        const assetsEmpty = document.getElementById("assetsEmpty");
+        const selectAllAssets = document.getElementById("selectAllAssets");
+        const assetsSelectedCount = document.getElementById("assetsSelectedCount");
+        const deleteAssetsBtn = document.getElementById("deleteAssetsBtn");
+        const assetsSearchInput = document.getElementById("assetsSearchInput");
+        
+        const galeriaActivos = document.getElementById("galeriaActivos");
+        const uploadMultipleBtn = document.getElementById("uploadMultipleBtn");
+        const deleteMultipleBtn = document.getElementById("deleteMultipleBtn");
+        const uploadMultipleInput = document.getElementById("uploadMultipleInput");
+        const editActivoCheckbox = document.getElementById("editActivo");
+        const activoLabel = document.getElementById("activoLabel");
 
-    const filterStatus = document.getElementById("filterStatus");
-    const filterCategory = document.getElementById("filterCategory");
-    const editCategoria = document.getElementById("editCategoria");
-    const editCategoriaCustom = document.getElementById("editCategoriaCustom");
+        const filterStatus = document.getElementById("filterStatus");
+        const filterCategory = document.getElementById("filterCategory");
+        const editCategoria = document.getElementById("editCategoria");
+        const editCategoriaCustom = document.getElementById("editCategoriaCustom");
 
-    // Cargar config.json y asignar API_URL
-    async function loadConfig() {
-        try {
-            const response = await fetch("../config.json");
-            if (!response.ok) throw new Error("No se pudo cargar config.json");
-            const config = await response.json();
-            API_URL = config.apiUrls.productos;
-            initApp();
-        } catch (error) {
-            console.error("❌ Error al cargar config.json:", error);
-            alert("No se pudo cargar la configuración. Revise la consola.");
+        // Supabase vars
+        let supabaseClient = null;
+        let currentProductId = null; // Para rastrear el producto actual siendo editado
+        let originalImageUrl = null; // Imagen ORIGINAL cuando se abre el modal (para detectar cambios)
+        
+        // Galería multi-tenant
+        let businessName = null; // Nombre del negocio (config.nombreRestaurante)
+        let isRecycled = false; // Bandera: imagen viene de la galería (no subir a Storage)
+
+        // Cargar config.json y asignar API_URL + inicializar Supabase
+        async function loadConfig() {
+            try {
+                const response = await fetch("../config.json");
+                if (!response.ok) throw new Error("No se pudo cargar config.json");
+                const config = await response.json();
+
+                API_URL = config.apiUrls.productos;
+                businessName = config.nombreRestaurante; // 🏢 Obtener nombre del negocio para galería multi-tenant
+
+                // Inicializar cliente Supabase
+                const { createClient } = window.supabase;
+                supabaseClient = createClient(config.supabase.url, config.supabase.publicToken);
+
+                initApp();
+            } catch (error) {
+                console.error("❌ Error al cargar config.json:", error);
+                alert("No se pudo cargar la configuración. Revise la consola.");
+            }
         }
-    }
 
-function initApp() {
-    fetchProducts(); // Llamamos directamente, sin depender de DOMContentLoaded
-}
+        function initApp() {
+            switchToProductos(); // Mostrar vista de Productos por defecto
+            fetchProducts(); // Llamamos directamente, sin depender de DOMContentLoaded
+        }
+
+        /* SUPABASE: Subir imagen a Supabase Storage (SIN eliminar anterior) */
+        async function uploadImageToSupabase(file) {
+            if (!file) return null;
+
+            // Validar tamaño (máximo 2MB)
+            const MAX_SIZE = 2 * 1024 * 1024; // 2MB en bytes
+            if (file.size > MAX_SIZE) {
+                throw new Error("❌ El archivo es demasiado grande. Máximo 2MB.");
+            }
+
+            // Validar que sea una imagen
+            if (!file.type.startsWith("image/")) {
+                throw new Error("❌ Por favor selecciona un archivo de imagen válida.");
+            }
+
+            try {
+                // Generar nombre único usando timestamp
+                const timestamp = Date.now();
+                const fileExtension = file.name.substring(file.name.lastIndexOf('.'));
+                const fileName = `${timestamp}${fileExtension}`;
+
+                // Subir a Supabase Storage
+                const { data, error } = await supabaseClient.storage
+                    .from("productos")
+                    .upload(fileName, file, {
+                        cacheControl: "3600",
+                        upsert: false
+                    });
+
+                if (error) throw error;
+
+                // Obtener la URL pública
+                const { data: publicUrlData } = supabaseClient.storage
+                    .from("productos")
+                    .getPublicUrl(fileName);
+
+                return publicUrlData.publicUrl;
+            } catch (error) {
+                console.error("❌ Error al subir imagen:", error);
+                throw new Error(`No se pudo subir la imagen: ${error.message}`);
+            }
+        }
+
+        /* SUPABASE: Subir imagen con ruta específica (para /nombreRestaurante/) */
+        async function uploadImageToSupabaseWithPath(file, filePath) {
+            if (!file) return null;
+
+            // Validar tamaño (máximo 2MB)
+            const MAX_SIZE = 2 * 1024 * 1024;
+            if (file.size > MAX_SIZE) {
+                throw new Error("❌ El archivo es demasiado grande. Máximo 2MB.");
+            }
+
+            // Validar que sea una imagen
+            if (!file.type.startsWith("image/")) {
+                throw new Error("❌ Por favor selecciona un archivo de imagen válida.");
+            }
+
+            try {
+                // Subir a la ruta específica /nombreRestaurante/nombrearc​hivo
+                const { data, error } = await supabaseClient.storage
+                    .from("productos")
+                    .upload(filePath, file, {
+                        cacheControl: "3600",
+                        upsert: false
+                    });
+
+                if (error) throw error;
+
+                // Obtener la URL pública
+                const { data: publicUrlData } = supabaseClient.storage
+                    .from("productos")
+                    .getPublicUrl(filePath);
+
+                return publicUrlData.publicUrl;
+            } catch (error) {
+                console.error("❌ Error al subir imagen:", error);
+                throw new Error(`No se pudo subir la imagen: ${error.message}`);
+            }
+        }
+
+        /* SUPABASE: Verificar si URL pertenece a nuestro Supabase */
+        function isSupabaseUrl(url) {
+            return url && url.includes("xrmqmrwfogupimteewqe.supabase.co");
+        }
+
+        /* SUPABASE: Extraer nombre de archivo de URL */
+        function extractFileNameFromUrl(url) {
+            try {
+                // URL típica: https://xrmqmrwfogupimteewqe.supabase.co/storage/v1/object/public/productos/1710000000.jpg
+                const parts = url.split("/");
+                const fileName = parts[parts.length - 1];
+                return fileName ? decodeURIComponent(fileName) : null;
+            } catch (error) {
+                console.error("Error extrayendo nombre de archivo:", error);
+                return null;
+            }
+        }
+
+        /* SUPABASE: Eliminar imagen del Storage */
+        async function deleteImageFromSupabase(fileName) {
+            if (!fileName) {
+                throw new Error("Nombre de archivo vacío");
+            }
+
+            try {
+                const { error } = await supabaseClient.storage
+                    .from("productos")
+                    .remove([fileName]);
+
+                if (error) throw error;
+                console.log(`✅ Archivo eliminado de Supabase: ${fileName}`);
+            } catch (error) {
+                console.error("❌ Error al eliminar archivo:", error);
+                throw new Error(`No se pudo eliminar el archivo: ${error.message}`);
+            }
+        }
 
 
-    /* LOADER */
-    function showLoader(msg = "Cargando...") {
-        loaderText.textContent = msg;
-        loader.classList.add("active");
-        loader.style.display = "flex";
-    }
-    function hideLoader() {
-        loader.classList.remove("active");
-        loader.style.display = "none";
-    }
+        /* ================================
+       GALERÍA DE IMÁGENES RECICLABLES (MULTI-TENANT)
+       ================================ */
+
+        /* Cargar imágenes de la galería desde tabla 'imagenes_negocios' */
+        async function loadImagesFromGallery(negocioId) {
+            if (!negocioId) {
+                console.error("❌ ID de negocio vacío");
+                return [];
+            }
+
+            try {
+                galleryLoading.style.display = "flex";
+                galleryGrid.innerHTML = "";
+
+                // 🔐 FILTRO DE PRIVACIDAD MULTI-TENANT: Solo imágenes de ESTE negocio
+                const { data, error } = await supabaseClient
+                    .from("imagenes_negocios")
+                    .select("url, nombre_archivo")
+                    .eq("negocio_id", negocioId) // ✅ Filtro obligatorio
+                    .order("created_at", { ascending: false });
+
+                if (error) throw error;
+
+                console.log(`✅ Galería cargada: ${data.length} imágenes para "${negocioId}"`);
+                galleryLoading.style.display = "none";
+
+                if (data.length === 0) {
+                    galleryGrid.innerHTML = '<p style="color:var(--muted); text-align:center; padding:40px; grid-column:1/-1;">Sin imágenes en la galería. Sube una nueva foto primero.</p>';
+                    return [];
+                }
+
+                // Renderizar imágenes en grid
+                data.forEach(item => {
+                    const galleryItem = document.createElement("div");
+                    galleryItem.className = "gallery-item";
+                    galleryItem.title = item.nombre_archivo;
+
+                    const img = document.createElement("img");
+                    img.src = item.url;
+                    img.alt = item.nombre_archivo;
+                    img.loading = "lazy";
+
+                    galleryItem.appendChild(img);
+
+                    galleryItem.addEventListener("click", () => {
+                        selectImageFromGallery(item.url, galleryItem);
+                    });
+
+                    galleryGrid.appendChild(galleryItem);
+                });
+
+                return data;
+            } catch (error) {
+                console.error("❌ Error al cargar galería:", error);
+                galleryLoading.style.display = "none";
+                galleryGrid.innerHTML = '<p style="color:var(--danger); text-align:center; padding:40px; grid-column:1/-1;">Error al cargar la galería. Revise la consola.</p>';
+                return [];
+            }
+        }
+
+        /* Seleccionar imagen de la galería */
+        function selectImageFromGallery(imageUrl, galleryItemElement) {
+            // Remover selección anterior
+            const previousSelected = galleryGrid.querySelector(".gallery-item.selected");
+            if (previousSelected) {
+                previousSelected.classList.remove("selected");
+            }
+
+            // Marcar como seleccionada
+            galleryItemElement.classList.add("selected");
+
+            // Actualizar formulario
+            editImagenInput.value = imageUrl;
+            previewImg.src = imageUrl;
+            showImagePreview(); // Mostrar preview
+            isRecycled = true; // 🔄 Marcar como imagen reciclada (no subir a Supabase)
+            editImagenFileInput.value = ""; // Limpiar archivo nuevo
+
+            console.log(`✅ Imagen reciclada seleccionada: ${imageUrl}`);
+
+            // Cerrar galería
+            galleryModal.style.display = "none";
+        }
+
+        /* Abrir modal de galería */
+        function openGalleryModal() {
+            if (!businessName) {
+                alert("❌ No se pudo obtener el nombre del negocio. Recargue la página.");
+                return;
+            }
+
+            galleryModal.style.display = "flex";
+            galleryLoading.style.display = "flex";
+            galleryGrid.innerHTML = ""; // Limpiar previos
+
+            // Cargar imágenes de la galería
+            loadImagesFromGallery(businessName);
+        }
+
+        /* Alias: Abrir galería de activos desde el botón rápido en el modal */
+        function openGaleriaActivos() {
+            openGalleryModal();
+        }
+
+        /* Registrar nueva imagen en la tabla 'imagenes_negocios' */
+        async function registerImageInGallery(imageUrl, fileName, negocioId) {
+            if (!negocioId) {
+                console.error("❌ ID de negocio vacío para registrar en galería");
+                return false;
+            }
+
+            try {
+                const { error } = await supabaseClient
+                    .from("imagenes_negocios")
+                    .insert([
+                        {
+                            url: imageUrl,
+                            nombre_archivo: fileName,
+                            negocio_id: negocioId, // 🏢 Multi-tenant
+                            created_at: new Date().toISOString()
+                        }
+                    ]);
+
+                if (error) throw error;
+                console.log(`✅ Imagen registrada en galería: ${fileName}`);
+                return true;
+            } catch (error) {
+                console.error("⚠️ Error al registrar imagen en galería:", error);
+                // No bloquear el flujo si falla el registro
+                return false;
+            }
+        }
+
+
+        /* LOADER */
+        function showLoader(msg = "Cargando...") {
+            loaderText.textContent = msg;
+            loader.classList.add("active");
+            loader.style.display = "flex";
+        }
+        function hideLoader() {
+            loader.classList.remove("active");
+            loader.style.display = "none";
+        }
 
         /* OBTENER PRODUCTOS */
         async function fetchProducts() {
@@ -1205,7 +1903,7 @@ function initApp() {
             otherOption.value = 'otra';
             otherOption.textContent = '➕ Otra...';
             editCategoria.appendChild(otherOption);
-            
+
             // 4. Preseleccionar la categoría si existe
             if (categories.includes(currentCategory)) {
                 editCategoria.value = currentCategory;
@@ -1224,30 +1922,32 @@ function initApp() {
                 editCategoriaCustom.style.display = 'none';
                 // Si cambiamos a una categoría válida o a 'seleccionar', limpiamos el input custom
                 if (editCategoria.value !== 'otra') {
-                     editCategoriaCustom.value = '';
+                    editCategoriaCustom.value = '';
                 }
             }
         }
         editCategoria.addEventListener('change', updateCustomCategoryInput);
 
 
-        /* NUEVO: FUNCIÓN CENTRAL DE FILTRADO (se mantiene) */
+        /* FILTRADO: CORRECCIÓN DE ERROR + ROBUSTEZ */
         function applyFilters() {
-            const searchText = searchInput.value.toLowerCase().trim();
+            const searchText = String(searchInput.value || "").toLowerCase().trim();
             const statusFilter = filterStatus.value;
-            const categoryFilter = filterCategory.value.toLowerCase();
+            const categoryFilter = String(filterCategory.value || "").toLowerCase();
 
             const filteredList = products.filter(p => {
                 const isActive = p.activo;
                 const statusMatch = statusFilter === 'all' || (statusFilter === 'active' && isActive) || (statusFilter === 'inactive' && !isActive);
                 if (!statusMatch) return false;
 
-                const productCategory = (p.categoria || "").toLowerCase();
+                const productCategory = String(p.categoria || "").toLowerCase();
                 const categoryMatch = categoryFilter === 'all' || productCategory === categoryFilter;
                 if (!categoryMatch) return false;
 
-                const productName = (p.nombre || "").toLowerCase();
-                const productDescription = (p.descripcion || "").toLowerCase();
+                // ✅ CORRECCIÓN: Convertir a String ANTES de usar toLowerCase()
+                // Previene error si p.nombre es número, null o undefined
+                const productName = String(p.nombre || "").toLowerCase();
+                const productDescription = String(p.descripcion || "").toLowerCase();
 
                 const textMatch = !searchText || productName.includes(searchText) || productDescription.includes(searchText);
 
@@ -1267,26 +1967,142 @@ function initApp() {
             activoLabel.style.color = isActive ? "var(--success)" : "var(--danger)";
         });
 
-        // Vista previa de la imagen
+        /* ================================
+       GESTOR DE IMÁGENES: DROPZONE + NATIVE CAPTURE
+       ================================ */
+        
+        // Mostrar preview - ocultar dropzone
+        function showImagePreview() {
+            dropzone.style.display = "none";
+            previewImg.style.display = "block";
+            imageManagerButtons.style.display = "grid";
+        }
+
+        // Ocultar preview - mostrar dropzone
+        function hideImagePreview() {
+            dropzone.style.display = "flex";
+            previewImg.style.display = "none";
+            imageManagerButtons.style.display = "none";
+        }
+
+        // Procesar archivo seleccionado
+        function processImageFile(file) {
+            if (!file || !file.type.startsWith("image/")) {
+                alert("❌ Por favor selecciona una imagen válida");
+                return;
+            }
+            const previewUrl = URL.createObjectURL(file);
+            previewImg.src = previewUrl;
+            showImagePreview();
+        }
+
+        // DROPZONE: Click
+        dropzone.addEventListener('click', () => {
+            editImagenFileInput.click();
+        });
+
+        // DROPZONE: Drag & Drop
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('dragover');
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                editImagenFileInput.files = e.dataTransfer.files;
+                processImageFile(file);
+            }
+        });
+
+        // Input file: cambio
+        editImagenFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                processImageFile(file);
+            }
+        });
+
+        // Botón "Cambiar" imagen (después de preview)
+        changeImageBtn.addEventListener('click', () => {
+            editImagenFileInput.click();
+        });
+
+        // Vista previa de URL manual
         editImagenInput.addEventListener('input', (e) => {
-            modalImg.src = e.target.value.trim() || DEFAULT_IMG;
+            const url = e.target.value.trim();
+            if (editImagenFileInput.files.length === 0) {
+                if (url) {
+                    previewImg.src = url;
+                    showImagePreview();
+                } else {
+                    hideImagePreview();
+                }
+            }
+        });
+
+        /* GALERÍA MODAL: Event Listeners */
+        // Botón rápido de galería en modal
+        if (quickGalleryBtn) {
+            quickGalleryBtn.addEventListener('click', () => {
+                openGaleriaActivos();
+            });
+        }
+
+        // Cerrar modal de galería
+        closeGalleryModal.addEventListener('click', () => {
+            galleryModal.style.display = "none";
+        });
+
+        // Botón "Eliminar Imagen" (reset inteligente)
+        clearImageBtn.addEventListener('click', () => {
+            editImagenFileInput.value = ""; // Limpiar el input file
+            editImagenInput.value = ""; // Limpiar la URL manual
+            isRecycled = false; // Reset bandera de reciclada
+            hideImagePreview(); // Mostrar dropzone
+            
+            // Reset selección en galería
+            try {
+                const selectedItems = galleryGrid.querySelectorAll(".gallery-item.selected");
+                selectedItems.forEach(item => item.classList.remove("selected"));
+            } catch (e) {
+                // Si galería no existe aún, ignorar
+            }
+            
+            console.log("🧹 Imagen limpiada del formulario");
         });
 
         function openModal(p) {
             isNewProduct = false;
+            currentProductId = p.id;
+            originalImageUrl = p.imagen; // 🔴 RASTREAR imagen original para detectar cambios
+            isRecycled = false; // Reset: asumir que la imagen actual NO es reciclada (es nueva o manual)
 
             document.getElementById("editId").value = p.id;
             document.getElementById("editNombre").value = p.nombre;
-            document.getElementById("editConfig").value = p.config || "";
             document.getElementById("editPrecio").value = p.precio;
             editImagenInput.value = p.imagen;
+            editImagenFileInput.value = ""; // Limpiar input file
             document.getElementById("editDescripcion").value = p.descripcion;
+
+            // Mostrar previsualización de la imagen actual
+            if (p.imagen) {
+                previewImg.src = p.imagen;
+                showImagePreview();
+            } else {
+                hideImagePreview();
+            }
 
             populateEditCategories(p.categoria); // Carga y preselecciona
 
             // Configuración del input custom y select
             if (editCategoria.value === 'otra') {
-                 // Si es 'otra' (categoría nueva que no está en la lista), cargamos el nombre en el input custom
                 editCategoriaCustom.value = p.categoria;
             } else {
                 editCategoriaCustom.value = '';
@@ -1295,11 +2111,9 @@ function initApp() {
 
             const isActive = p.activo;
             editActivoCheckbox.checked = isActive;
-            modalImg.src = p.imagen || DEFAULT_IMG;
 
             activoLabel.textContent = isActive ? "Activo 🟢" : "Inactivo 🔴";
             activoLabel.style.color = isActive ? "var(--success)" : "var(--danger)";
-
 
             deleteBtn.style.display = "inline-block";
             saveBtn.textContent = "Guardar";
@@ -1309,16 +2123,22 @@ function initApp() {
         /* NUEVO PRODUCTO */
         addProductBtn.onclick = () => {
             isNewProduct = true;
+            currentProductId = null;
+            originalImageUrl = null; // No hay imagen original para nuevo producto
+            isRecycled = false; // Reset - nueva producto no tiene imagen reciclada
+
             const nextId = products.length ? Math.max(...products.map(p => Number(p.id))) + 1 : 1;
 
             document.getElementById("editId").value = nextId;
             document.getElementById("editNombre").value = "";
-            document.getElementById("editConfig").value = "";
             document.getElementById("editPrecio").value = "";
             editImagenInput.value = "";
+            editImagenFileInput.value = ""; // Limpiar input de archivo
             document.getElementById("editDescripcion").value = "";
             editActivoCheckbox.checked = true;
-            modalImg.src = DEFAULT_IMG;
+
+            // Mostrar dropzone (nuevo producto = sin imagen)
+            hideImagePreview();
 
             populateEditCategories(); // Carga las categorías sin preselección
 
@@ -1335,19 +2155,19 @@ function initApp() {
             modal.style.display = "flex";
         };
 
-        /* GUARDAR */
+        /* GUARDAR - CON LÓGICA INTELIGENTE DE GALERÍA MULTI-TENANT 🧠 */
         saveBtn.onclick = async () => {
             const nombre = document.getElementById("editNombre").value.trim();
             const precioStr = document.getElementById("editPrecio").value.replace(/\./g, "").replace(/,/g, "");
             const precio = Number(precioStr);
-            let finalCategory = editCategoria.value; // Valor del select
+            let finalCategory = editCategoria.value;
 
-            // 1. Obtener la categoría final (maneja el caso 'otra')
+            // 1. Obtener la categoría final
             if (finalCategory === 'otra') {
                 finalCategory = editCategoriaCustom.value.trim();
             }
 
-            // 2. Validación
+            // 2. Validación básica
             if (!nombre) {
                 alert("❌ El nombre del producto es obligatorio.");
                 return;
@@ -1357,25 +2177,135 @@ function initApp() {
                 return;
             }
             if (!finalCategory) {
-                 alert("❌ La categoría del producto es obligatoria.");
-                 return;
+                alert("❌ La categoría del producto es obligatoria.");
+                return;
             }
 
-            const body = {
-                id: document.getElementById("editId").value,
-                nombre: nombre,
-                categoria: finalCategory, // Usar el valor final
-                config: document.getElementById("editConfig").value,
-                precio: precioStr,
-                imagen: editImagenInput.value.trim(),
-                descripcion: document.getElementById("editDescripcion").value.trim(),
-                activo: editActivoCheckbox.checked,
-            };
+            // 3️⃣ LÓGICA INTELIGENTE DE IMAGEN CON GALERÍA MULTI-TENANT
+            let imageUrl = null;
+            const hasNewFile = editImagenFileInput.files.length > 0;
+            const currentManualUrl = editImagenInput.value.trim();
+            const imageChanged = originalImageUrl !== currentManualUrl || hasNewFile;
 
-            const action = isNewProduct ? "add" : "update";
+            console.log(`📸 GALERÍA: isRecycled=${isRecycled} | hasFile=${hasNewFile} | changed=${imageChanged}`);
 
-            showLoader("Guardando...");
+            showLoader("Procesando imagen...");
+
             try {
+                if (isNewProduct) {
+                    // 🆕 PRODUCTO NUEVO
+                    if (hasNewFile) {
+                        // NUEVA IMAGEN: subir a /nombreRestaurante/
+                        const file = editImagenFileInput.files[0];
+                        const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+                        const filePath = `${businessName}/${fileName}`; // 🏢 Multi-tenant path
+
+                        showLoader("Subiendo imagen...");
+                        imageUrl = await uploadImageToSupabaseWithPath(file, filePath);
+
+                        // Registrar en tabla imagenes_negocios
+                        await registerImageInGallery(imageUrl, fileName, businessName);
+                        console.log("✅ Nueva imagen registrada en galería");
+
+                    } else if (currentManualUrl) {
+                        // URL MANUAL
+                        imageUrl = currentManualUrl;
+                    } else {
+                        // 🚫 SIN IMAGEN: enviar VACÍO a Sheets (no DEFAULT_IMG)
+                        imageUrl = "";
+                    }
+                } else {
+                    // ✏️ PRODUCTO EXISTENTE
+                    if (!imageChanged) {
+                        // SIN CAMBIOS: mantener original
+                        imageUrl = originalImageUrl;
+                        console.log("⏭️ Imagen sin cambios");
+
+                    } else if (isRecycled && currentManualUrl) {
+                        // ♻️ IMAGEN RECICLADA DE LA GALERÍA: no subir a Supabase
+                        imageUrl = currentManualUrl;
+                        console.log("♻️ Usando imagen reciclada (de galería)");
+
+                    } else if (hasNewFile) {
+                        // NUEVA IMAGEN: subir
+                        const file = editImagenFileInput.files[0];
+                        const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+                        const filePath = `${businessName}/${fileName}`;
+
+                        showLoader("Subiendo imagen nueva...");
+                        const newImageUrl = await uploadImageToSupabaseWithPath(file, filePath);
+
+                        // Eliminar imagen anterior (si es de Supabase)
+                        if (originalImageUrl && isSupabaseUrl(originalImageUrl)) {
+                            try {
+                                const oldFileName = extractFileNameFromUrl(originalImageUrl);
+                                if (oldFileName) {
+                                    await deleteImageFromSupabase(oldFileName);
+                                    console.log("🗑️ Imagen anterior eliminada");
+                                }
+                            } catch (error) {
+                                console.warn("⚠️ No se pudo eliminar imagen anterior:", error);
+                            }
+                        }
+
+                        // Registrar nueva imagen en galería
+                        await registerImageInGallery(newImageUrl, fileName, businessName);
+                        imageUrl = newImageUrl;
+
+                    } else if (currentManualUrl === "") {
+                        // USUARIO ELIMINÓ IMAGEN: enviar VACÍO a Sheets
+                        if (originalImageUrl && isSupabaseUrl(originalImageUrl)) {
+                            try {
+                                const oldFileName = extractFileNameFromUrl(originalImageUrl);
+                                if (oldFileName) {
+                                    await deleteImageFromSupabase(oldFileName);
+                                    console.log("🗑️ Imagen eliminada del Storage");
+                                }
+                            } catch (error) {
+                                console.warn("⚠️ No se pudo eliminar:", error);
+                            }
+                        }
+                        imageUrl = ""; // 🚫 Enviar VACÍO, no DEFAULT_IMG
+
+                    } else {
+                        // URL MANUAL CAMBIÓ
+                        if (originalImageUrl && isSupabaseUrl(originalImageUrl)) {
+                            try {
+                                const oldFileName = extractFileNameFromUrl(originalImageUrl);
+                                if (oldFileName) {
+                                    await deleteImageFromSupabase(oldFileName);
+                                }
+                            } catch (error) {
+                                console.warn("⚠️ Error al eliminar anterior:", error);
+                            }
+                        }
+                        imageUrl = currentManualUrl;
+                    }
+                }
+
+                // Validación final: solo asignar DEFAULT_IMG si imageUrl es realmente nulo
+                // ❌ NO reemplazar strings vacíos "" (eso fue intencional - usuario eliminó imagen)
+                if (imageUrl === null || imageUrl === undefined) {
+                    imageUrl = DEFAULT_IMG;
+                }
+
+                console.log(`🎯 URL final para Google Sheets: "${imageUrl}"`);
+
+                // 4️⃣ GUARDAR EN GOOGLE SHEETS
+                const body = {
+                    id: document.getElementById("editId").value,
+                    nombre: nombre,
+                    categoria: finalCategory,
+                    config: "",
+                    precio: precioStr,
+                    imagen: imageUrl,
+                    descripcion: document.getElementById("editDescripcion").value.trim(),
+                    activo: editActivoCheckbox.checked,
+                };
+
+                const action = isNewProduct ? "add" : "update";
+
+                showLoader("Guardando...");
                 const response = await fetch(API_URL, {
                     method: "POST",
                     body: JSON.stringify({ action, ...body }),
@@ -1383,13 +2313,16 @@ function initApp() {
 
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
+                console.log(`✅ Producto ${action} en Google Sheets`);
                 modal.style.display = "none";
+                editImagenFileInput.value = "";
+                isRecycled = false; // Reset la bandera de reciclada
                 await fetchProducts();
                 applyFilters();
 
             } catch (error) {
-                console.error("❌ Error al guardar/actualizar producto:", error);
-                alert("Hubo un error al comunicarse con la API. Revise la consola.");
+                console.error("❌ Error en saveBtn:", error);
+                alert("Error: " + error.message);
             } finally {
                 hideLoader();
             }
@@ -1399,22 +2332,32 @@ function initApp() {
         deleteBtn.onclick = async () => {
             if (!confirm("¿Está seguro de eliminar este producto? Esta acción no se puede deshacer.")) return;
 
+            const productId = document.getElementById("editId").value;
+            // NOTA: NO eliminamos la imagen de Supabase Storage
+            // Razón: Otras productos pueden estar reciclando esta imagen vía la galería
+            // La imagen se mantendrá en Storage para disponibilidad de galería
+
             showLoader("Eliminando...");
+
             try {
+                // ✂️ SOLO eliminar el producto de Google Sheets
+                // ❌ NO tocamos Supabase Storage (images may be recycled by other products)
                 const response = await fetch(API_URL, {
                     method: "POST",
-                    body: JSON.stringify({ action: "delete", id: document.getElementById("editId").value }),
+                    body: JSON.stringify({ action: "delete", id: productId }),
                 });
 
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
+                console.log(`✅ Producto eliminado de Google Sheets: ${productId}`);
+                console.log("ℹ️ Imagen no eliminada de Storage (puede estar en uso por otra producto)");
                 modal.style.display = "none";
                 await fetchProducts();
                 applyFilters();
 
             } catch (error) {
                 console.error("❌ Error al eliminar producto:", error);
-                alert("Hubo un error al comunicarse con la API. Revise la consola.");
+                alert("Hubo un error al eliminar el producto. Revise la consola.");
             } finally {
                 hideLoader();
             }
@@ -1437,7 +2380,458 @@ function initApp() {
             }
         });
 
- loadConfig(); // Inicia todo cargando la configuración
+        /* ================================
+       ASSETS MANAGEMENT MODAL - Banco de imágenes completo
+       ================================ */
+
+        // Abrir modal de gestión de activos
+        async function openAssetsManagementModal() {
+            assetsManagementModal.style.display = "flex";
+            assetsLoading.style.display = "flex";
+            assetsEmpty.style.display = "none";
+            assetsGrid.innerHTML = "";
+            selectAllAssets.checked = false;
+            assetsSelectedCount.textContent = "0";
+            assetsSearchInput.value = "";
+            
+            await loadAssetsForManagement();
+        }
+
+        // Cerrar modal
+        closeAssetsModal.addEventListener('click', () => {
+            assetsManagementModal.style.display = "none";
+        });
+
+        // Cargar todas las imágenes para gestión
+        async function loadAssetsForManagement() {
+            if (!businessName) {
+                assetsGrid.innerHTML = '<p style="color:var(--danger); grid-column:1/-1;">❌ No se encontró el negocio</p>';
+                assetsLoading.style.display = "none";
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from("imagenes_negocios")
+                    .select("id, url, nombre_archivo")
+                    .eq("negocio_id", businessName)
+                    .order("created_at", { ascending: false });
+
+                if (error) throw error;
+
+                assetsLoading.style.display = "none";
+
+                if (data.length === 0) {
+                    assetsEmpty.style.display = "block";
+                    assetsGrid.innerHTML = "";
+                    return;
+                }
+
+                // Renderizar imágenes con checkbox
+                data.forEach(item => {
+                    const assetDiv = document.createElement("div");
+                    assetDiv.className = "asset-item";
+                    assetDiv.dataset.assetId = item.id;
+                    assetDiv.dataset.nombreArchivo = item.nombre_archivo;
+
+                    const img = document.createElement("img");
+                    img.src = item.url;
+                    img.alt = item.nombre_archivo;
+                    img.style.pointerEvents = "none"; // Para que el checkbox funcione
+
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.className = "asset-checkbox";
+                    checkbox.dataset.assetId = item.id;
+
+                    assetDiv.appendChild(img);
+                    assetDiv.appendChild(checkbox);
+                    assetsGrid.appendChild(assetDiv);
+
+                    // Click en la imagen (no en checkbox) para seleccionar/deseleccionar
+                    assetDiv.addEventListener('click', (e) => {
+                        if (e.target === checkbox) return; // Si clickeó en checkbox, dejar que se maneje solo
+                        e.stopPropagation();
+                        checkbox.checked = !checkbox.checked;
+                        updateAssetCheckboxUI();
+                        updateDeleteAssetButtonState();
+                    });
+
+                    // Cambio en checkbox
+                    checkbox.addEventListener('change', () => {
+                        updateAssetCheckboxUI();
+                        updateDeleteAssetButtonState();
+                    });
+                });
+
+            } catch (error) {
+                console.error("❌ Error al cargar assets:", error);
+                assetsGrid.innerHTML = '<p style="color:var(--danger); grid-column:1/-1; text-align:center;">Error al cargar. Revise la consola.</p>';
+                assetsLoading.style.display = "none";
+            }
+        }
+
+        // Actualizar UI visual de checkboxes seleccionados
+        function updateAssetCheckboxUI() {
+            const checkboxes = assetsGrid.querySelectorAll(".asset-checkbox");
+            checkboxes.forEach(cb => {
+                const assetDiv = cb.closest(".asset-item");
+                if (cb.checked) {
+                    assetDiv.classList.add("selected");
+                } else {
+                    assetDiv.classList.remove("selected");
+                }
+            });
+
+            // Actualizar contador
+            const checkedCount = assetsGrid.querySelectorAll(".asset-checkbox:checked").length;
+            assetsSelectedCount.textContent = checkedCount;
+
+            // Actualizar "Seleccionar Todo"
+            const allCheckboxes = assetsGrid.querySelectorAll(".asset-checkbox");
+            selectAllAssets.checked = allCheckboxes.length > 0 && checkedCount === allCheckboxes.length;
+        }
+
+        // Seleccionar/Deseleccionar Todo
+        selectAllAssets.addEventListener('change', () => {
+            const checkboxes = assetsGrid.querySelectorAll(".asset-checkbox");
+            checkboxes.forEach(cb => {
+                cb.checked = selectAllAssets.checked;
+            });
+            updateAssetCheckboxUI();
+            updateDeleteAssetButtonState();
+        });
+
+        // Buscar en assets
+        assetsSearchInput.addEventListener('input', (e) => {
+            const searchTerm = String(e.target.value || "").toLowerCase();
+            const assetItems = assetsGrid.querySelectorAll(".asset-item");
+            
+            assetItems.forEach(item => {
+                const nombreArchivo = String(item.dataset.nombreArchivo || "").toLowerCase();
+                item.style.display = nombreArchivo.includes(searchTerm) ? "" : "none";
+            });
+        });
+
+        // Actualizar estado del botón de eliminar
+        function updateDeleteAssetButtonState() {
+            const checkedItems = assetsGrid.querySelectorAll(".asset-checkbox:checked");
+            if (checkedItems.length > 0) {
+                deleteAssetsBtn.disabled = false;
+                deleteAssetsBtn.style.opacity = "1";
+                deleteAssetsBtn.style.cursor = "pointer";
+            } else {
+                deleteAssetsBtn.disabled = true;
+                deleteAssetsBtn.style.opacity = "0.5";
+                deleteAssetsBtn.style.cursor = "not-allowed";
+            }
+        }
+
+        // Eliminar assets seleccionados (AL HACER CLICK)
+        deleteAssetsBtn.addEventListener('click', async () => {
+            const checkedItems = assetsGrid.querySelectorAll(".asset-checkbox:checked");
+            if (checkedItems.length === 0) {
+                alert("❌ Selecciona al menos una imagen");
+                return;
+            }
+
+            // CONFIRMACIÓN CRÍTICA
+            const confirmed = confirm(
+                `⚠️ ¡PELIGRO! Estás a punto de eliminar ${checkedItems.length} imagen(es). ` +
+                `Si estas imágenes están siendo recicladas en tus productos, se borrarán de ellos permanentemente. ` +
+                `¿Estás absolutamente seguro?`
+            );
+
+            if (!confirmed) return;
+
+            try {
+                showLoader("Eliminando imágenes...");
+
+                let deletedCount = 0;
+                let errorCount = 0;
+
+                for (let checkbox of checkedItems) {
+                    const assetId = checkbox.dataset.assetId;
+                    const nombreArchivo = checkbox.closest(".asset-item").dataset.nombreArchivo;
+
+                    // 🗑️ PASO 1: Eliminar del Storage
+                    if (nombreArchivo && businessName) {
+                        const filePath = `${businessName}/${nombreArchivo}`;
+                        try {
+                            const { error: storageError } = await supabaseClient.storage
+                                .from("productos")
+                                .remove([filePath]);
+
+                            if (storageError) {
+                                console.warn(`⚠️ Error eliminando de Storage: ${filePath}`, storageError);
+                                errorCount++;
+                            } else {
+                                console.log(`✅ Archivo eliminado del Storage: ${filePath}`);
+                            }
+                        } catch (storageErr) {
+                            console.warn(`⚠️ Excepción al eliminar del Storage:`, storageErr);
+                            errorCount++;
+                        }
+                    }
+
+                    // 🗑️ PASO 2: Eliminar de la tabla
+                    try {
+                        const { error: dbError } = await supabaseClient
+                            .from("imagenes_negocios")
+                            .delete()
+                            .eq("id", assetId);
+
+                        if (dbError) {
+                            console.warn(`Error eliminando de BD (ID: ${assetId}):`, dbError);
+                            errorCount++;
+                        } else {
+                            console.log(`✅ Registro eliminado de BD: ID ${assetId}`);
+                            deletedCount++;
+                        }
+                    } catch (dbErr) {
+                        console.error("Error en BD:", dbErr);
+                        errorCount++;
+                    }
+                }
+
+                // Mostrar resumen
+                if (errorCount === 0) {
+                    alert(`✅ ${deletedCount} imagen(es) eliminada(s) correctamente`);
+                } else {
+                    alert(`⚠️ ${deletedCount} eliminadas, ${errorCount} con errores. Revise la consola.`);
+                }
+
+                await loadAssetsForManagement();
+                
+            } catch (error) {
+                console.error("❌ Error en eliminación masiva:", error);
+                alert("Error al eliminar. Revise la consola.");
+            } finally {
+                hideLoader();
+            }
+        });
+
+        /* ================================
+       TOGGLE ENTRE SECCIONES: GESTOR vs GALERÍA (mantener para compatibilidad)
+       ================================ */
+       
+        function switchToProductos() {
+            productosSeccion.style.display = "block";
+            galeriaSeccion.style.display = "none";
+            gestorBtn.classList.add("active");
+            galeriaNavBtn.classList.remove("active");
+            document.querySelector(".page-title").textContent = "Productos";
+        }
+
+        async function switchToGaleria() {
+            productosSeccion.style.display = "none";
+            galeriaSeccion.style.display = "block";
+            gestorBtn.classList.remove("active");
+            galeriaNavBtn.classList.add("active");
+            document.querySelector(".page-title").textContent = "Galería de Activos";
+            
+            // Cargar imágenes de la galería
+            await loadGaleriaActivos();
+        }
+
+        // Botones de navegación
+        gestorBtn.addEventListener('click', switchToProductos);
+        galeriaNavBtn.addEventListener('click', openAssetsManagementModal);
+
+        /* ================================
+       GALERÍA DE ACTIVOS (Upload masivo + Borrado)
+       ================================ */
+
+        // Cargar todas las imágenes de la galería
+        async function loadGaleriaActivos() {
+            if (!businessName) {
+                galeriaActivos.innerHTML = '<p style="color:var(--danger);">❌ No se encontró el negocio</p>';
+                return;
+            }
+
+            try {
+                showLoader("Cargando galería...");
+                galeriaActivos.innerHTML = "";
+
+                const { data, error } = await supabaseClient
+                    .from("imagenes_negocios")
+                    .select("id, url, nombre_archivo")
+                    .eq("negocio_id", businessName)
+                    .order("created_at", { ascending: false });
+
+                if (error) throw error;
+
+                if (data.length === 0) {
+                    galeriaActivos.innerHTML = '<p style="color:var(--muted); grid-column:1/-1; text-align:center; padding:40px;">Sin imágenes aún. Sube una nueva para comenzar.</p>';
+                    hideLoader();
+                    return;
+                }
+
+                // Renderizar cada imagen con checkbox
+                data.forEach(item => {
+                    const itemDiv = document.createElement("div");
+                    itemDiv.className = "gallery-item-container";
+                    itemDiv.style.position = "relative";
+
+                    const img = document.createElement("img");
+                    img.src = item.url;
+                    img.alt = item.nombre_archivo;
+                    img.style.width = "100%";
+                    img.style.height = "100%";
+                    img.style.objectFit = "cover";
+
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.dataset.imageId = item.id;
+                    checkbox.dataset.nombreArchivo = item.nombre_archivo; // 📦 Guardar nombre para eliminación
+                    checkbox.className = "gallery-checkbox";
+                    checkbox.style.cssText = "position:absolute; top:8px; left:8px; width:20px; height:20px; cursor:pointer; z-index:2;";
+
+                    itemDiv.appendChild(img);
+                    itemDiv.appendChild(checkbox);
+                    galeriaActivos.appendChild(itemDiv);
+
+                    // Evento para seleccionar/deseleccionar
+                    checkbox.addEventListener('change', updateDeleteButtonState);
+                });
+
+                hideLoader();
+            } catch (error) {
+                console.error("❌ Error al cargar galería:", error);
+                galeriaActivos.innerHTML = '<p style="color:var(--danger); grid-column:1/-1; text-align:center;">Error al cargar. Revise la consola.</p>';
+                hideLoader();
+            }
+        }
+
+        // Actualizar estado del botón de borrado
+        function updateDeleteButtonState() {
+            const checkedItems = galeriaActivos.querySelectorAll(".gallery-checkbox:checked");
+            if (checkedItems.length > 0) {
+                deleteMultipleBtn.disabled = false;
+                deleteMultipleBtn.style.opacity = "1";
+                deleteMultipleBtn.style.cursor = "pointer";
+            } else {
+                deleteMultipleBtn.disabled = true;
+                deleteMultipleBtn.style.opacity = "0.5";
+                deleteMultipleBtn.style.cursor = "not-allowed";
+            }
+        }
+
+        // Upload masivo
+        uploadMultipleBtn.addEventListener('click', () => {
+            uploadMultipleInput.click();
+        });
+
+        uploadMultipleInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length === 0) return;
+
+            try {
+                showLoader(`Subiendo ${files.length} imagen(es)...`);
+
+                for (let file of files) {
+                    if (!file.type.startsWith("image/")) continue;
+                    
+                    const MAX_SIZE = 2 * 1024 * 1024;
+                    if (file.size > MAX_SIZE) {
+                        console.warn(`⚠️ ${file.name} es muy grande, omitiendo...`);
+                        continue;
+                    }
+
+                    const fileName = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+                    const filePath = `${businessName}/${fileName}`;
+
+                    const { data, error } = await supabaseClient.storage
+                        .from("productos")
+                        .upload(filePath, file);
+
+                    if (error) {
+                        console.error(`Error subiendo ${file.name}:`, error);
+                        continue;
+                    }
+
+                    const { data: publicUrlData } = supabaseClient.storage
+                        .from("productos")
+                        .getPublicUrl(filePath);
+
+                    // Registrar en tabla
+                    await registerImageInGallery(publicUrlData.publicUrl, fileName, businessName);
+                }
+
+                alert("✅ Imágenes subidas exitosamente");
+                uploadMultipleInput.value = "";
+                await loadGaleriaActivos();
+            } catch (error) {
+                console.error("❌ Error en upload masivo:", error);
+                alert("Error al subir imágenes. Revise la consola.");
+            } finally {
+                hideLoader();
+            }
+        });
+
+        // Borrado masivo
+        deleteMultipleBtn.addEventListener('click', async () => {
+            const checkedItems = galeriaActivos.querySelectorAll(".gallery-checkbox:checked");
+            if (checkedItems.length === 0) {
+                alert("❌ Selecciona al menos una imagen");
+                return;
+            }
+
+            if (!confirm(`¿Eliminar ${checkedItems.length} imagen(es)? Esta acción no se puede deshacer.`)) {
+                return;
+            }
+
+            try {
+                showLoader("Eliminando imágenes...");
+
+                for (let checkbox of checkedItems) {
+                    const imageId = checkbox.dataset.imageId;
+                    const nombreArchivo = checkbox.dataset.nombreArchivo;
+                    
+                    // 🗑️ PASO 1: Eliminar del Storage PRIMERO
+                    if (nombreArchivo && businessName) {
+                        const filePath = `${businessName}/${nombreArchivo}`; // Ruta completa
+                        try {
+                            const { error: storageError } = await supabaseClient.storage
+                                .from("productos")
+                                .remove([filePath]); // Espera array de paths
+                            
+                            if (storageError) {
+                                console.warn(`⚠️ Error eliminando del Storage: ${nombreArchivo}`, storageError);
+                            } else {
+                                console.log(`✅ Archivo eliminado del Storage: ${filePath}`);
+                                // Nota: Supabase borra la carpeta automáticamente si está vacía
+                            }
+                        } catch (storageErr) {
+                            console.warn(`⚠️ Excepción al eliminar del Storage:`, storageErr);
+                            // Continuar con la eliminación de la BD aunque falle el Storage
+                        }
+                    }
+
+                    // 🗑️ PASO 2: Eliminar de la tabla 'imagenes_negocios'
+                    const { error: dbError } = await supabaseClient
+                        .from("imagenes_negocios")
+                        .delete()
+                        .eq("id", imageId);
+
+                    if (dbError) {
+                        console.warn(`Error eliminando de BD (ID: ${imageId}):`, dbError);
+                    } else {
+                        console.log(`✅ Registro eliminado de BD: ID ${imageId}`);
+                    }
+                }
+
+                alert("✅ Imágenes eliminadas correctamente");
+                await loadGaleriaActivos();
+            } catch (error) {
+                console.error("❌ Error en borrado masivo:", error);
+                alert("Error al eliminar. Revise la consola.");
+            } finally {
+                hideLoader();
+            }
+        });
+
+        loadConfig(); // Inicia todo cargando la configuración
     </script>
 
 </body>
