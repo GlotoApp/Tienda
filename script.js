@@ -15,7 +15,6 @@ document.addEventListener("configCargado", (e) => {
   }
 });
 
-
 // Variables globales
 let products = [];
 let cart = [];
@@ -24,13 +23,10 @@ let modalQuantity = 1;
 let configTienda = null;
 let currentDeliveryType = ""; // 🔥 VARIABLE PARA RASTREAR EL TIPO DE ENTREGA
 
-
 // 🧩 Escuchar cuando config.json haya sido cargado
 document.addEventListener("configCargado", (e) => {
   configTienda = e.detail;
 });
-
-
 
 // DOM Elements
 // DOM Elements
@@ -48,38 +44,37 @@ const cartFloatEl = document.getElementById("cart-float");
 const cartModalEl = document.getElementById("cart-modal");
 const productModalEl = document.getElementById("product-modal");
 
-
 /**
  * 🛠 Configura los filtros de categoría y búsqueda.
  * Extrae las categorías únicas, popula el SELECT y añade listeners.
  */
 async function setupCategoryAndSearchFilters() {
-    // Usamos la clave 'categoria' que se normaliza en loadProducts
-    const uniqueCategories = [
-        "Todo", // Opción por defecto
-        ...new Set(products.map(p => p.categoria).filter(c => c)) 
-    ];
+  // Usamos la clave 'categoria' que se normaliza en loadProducts
+  const uniqueCategories = [
+    "Todo", // Opción por defecto
+    ...new Set(products.map((p) => p.categoria).filter((c) => c)),
+  ];
 
-    // 1. Poblar el SELECT
-    categorySelect.innerHTML = ""; // Limpiar opciones anteriores
-    uniqueCategories.forEach(category => {
-        const option = document.createElement("option");
-        // value="" para "Todas las categorías" permite filtrar por todos.
-        option.value = (category === "Todo") ? "" : category; 
-        option.textContent = category;
-        categorySelect.appendChild(option);
-    });
+  // 1. Poblar el SELECT
+  categorySelect.innerHTML = ""; // Limpiar opciones anteriores
+  uniqueCategories.forEach((category) => {
+    const option = document.createElement("option");
+    // value="" para "Todas las categorías" permite filtrar por todos.
+    option.value = category === "Todo" ? "" : category;
+    option.textContent = category;
+    categorySelect.appendChild(option);
+  });
 
-    // 2. Añadir Listeners de Eventos
-    categorySelect.addEventListener("change", () => {
-        filterProducts(true); // true indica que es un cambio del usuario
-    });
-    productSearchInput.addEventListener("input", () => {
-        filterProducts(true); // true indica que es un cambio del usuario
-    });
-    
-    // 3. 💥 ¡CRUCIAL! Ejecutar el filtrado para el renderizado inicial de TODOS los productos.
-    filterProducts(false); // false indica que es la carga inicial
+  // 2. Añadir Listeners de Eventos
+  categorySelect.addEventListener("change", () => {
+    filterProducts(true); // true indica que es un cambio del usuario
+  });
+  productSearchInput.addEventListener("input", () => {
+    filterProducts(true); // true indica que es un cambio del usuario
+  });
+
+  // 3. 💥 ¡CRUCIAL! Ejecutar el filtrado para el renderizado inicial de TODOS los productos.
+  filterProducts(false); // false indica que es la carga inicial
 }
 /**
  * 🔍 Función principal para filtrar y mostrar los productos.
@@ -87,38 +82,38 @@ async function setupCategoryAndSearchFilters() {
  * @param {boolean} userInteraction - true si el usuario cambió los filtros, false si es carga inicial
  */
 function filterProducts(userInteraction = false) {
-    const selectedCategory = categorySelect.value;
-    const searchTerm = productSearchInput.value.toLowerCase().trim();
+  const selectedCategory = categorySelect.value;
+  const searchTerm = productSearchInput.value.toLowerCase().trim();
 
-    let filteredProducts = products;
+  let filteredProducts = products;
 
-    // 1. Filtrar por Categoría
-    // Si selectedCategory es "", se incluyen todos (Todas las categorías).
-    if (selectedCategory) {
-        filteredProducts = filteredProducts.filter(product => product.categoria === selectedCategory);
-    }
+  // 1. Filtrar por Categoría
+  // Si selectedCategory es "", se incluyen todos (Todas las categorías).
+  if (selectedCategory) {
+    filteredProducts = filteredProducts.filter(
+      (product) => product.categoria === selectedCategory,
+    );
+  }
 
-    // 2. Filtrar por Nombre del Producto
-    if (searchTerm) {
-        filteredProducts = filteredProducts.filter(product => 
-            // Buscamos si el nombre del producto incluye el término de búsqueda
-            product.nombre.toLowerCase().includes(searchTerm)
-        );
-    }
+  // 2. Filtrar por Nombre del Producto
+  if (searchTerm) {
+    filteredProducts = filteredProducts.filter((product) =>
+      // Buscamos si el nombre del producto incluye el término de búsqueda
+      product.nombre.toLowerCase().includes(searchTerm),
+    );
+  }
 
-    // 3. Renderizar los productos filtrados
-    // DEBES tener una función 'renderProducts' definida en otra parte de tu script.
-    renderProducts(filteredProducts);
-    
-    // 4. 📜 Scroll automático SOLO cuando el usuario filtra (no en carga inicial)
-    if (userInteraction) {
-        setTimeout(() => {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        }, 100);
-    }
+  // 3. Renderizar los productos filtrados
+  // DEBES tener una función 'renderProducts' definida en otra parte de tu script.
+  renderProducts(filteredProducts);
+
+  // 4. 📜 Scroll automático SOLO cuando el usuario filtra (no en carga inicial)
+  if (userInteraction) {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 100);
+  }
 }
-
-
 
 // Initialize app
 /**
@@ -148,7 +143,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-
 // Nota: la lógica de horario fue eliminada; la tienda siempre permite interacción local
 
 // ✅ Actualiza botones de productos
@@ -170,7 +164,6 @@ function updateProductButtons() {
   });
 }
 
-
 // Load products from Google Sheets
 /**
  * loadProducts
@@ -190,7 +183,6 @@ async function loadProducts() {
     // Clonar y registrar texto crudo para depuración (no afecta al parseo)
     const rawText = await response.clone().text();
     try {
-
     } catch (e) {}
 
     let data;
@@ -279,13 +271,13 @@ async function loadProducts() {
     if (!products || products.length === 0) {
       console.warn(
         "No se cargaron productos. Respuesta cruda (primeros 1000 chars):",
-        rawText.slice(0, 1000)
+        rawText.slice(0, 1000),
       );
       errorEl.style.display = "block";
       errorEl.textContent =
         'No se encontraron productos en la respuesta. Revisa la consola (raw response) o asegúrate de que la hoja "Productos" exista y tenga datos.';
     }
-setupCategoryAndSearchFilters();
+    setupCategoryAndSearchFilters();
 
     showLoading(false);
     //renderProducts();
@@ -325,23 +317,25 @@ function tryParsePossibleJSONP(txt) {
  * renderProducts
  * --------------
  * Muestra las tarjetas de producto en un único contenedor principal.
- * Esta función es utilizada por el sistema de filtros (`filterProducts`) 
+ * Esta función es utilizada por el sistema de filtros (`filterProducts`)
  * y por el renderizado inicial.
  * @param {Array<Object>} productsToRender - Lista de productos a dibujar.
  */
 function renderProducts(productsToRender) {
   // 💡 Define el ID de tu contenedor principal en index.html
-  const mainGridContainer = document.getElementById("main-products-grid"); 
-  
+  const mainGridContainer = document.getElementById("main-products-grid");
+
   if (!mainGridContainer) {
-    console.error("❌ ERROR: Contenedor principal 'main-products-grid' no encontrado.");
+    console.error(
+      "❌ ERROR: Contenedor principal 'main-products-grid' no encontrado.",
+    );
     return;
   }
-  
+
   mainGridContainer.innerHTML = ""; // Limpiar contenido anterior
 
   // Usa los productos filtrados, o si no hay argumento, usa el array global (aunque filterProducts lo enviará siempre)
-  const finalProducts = productsToRender || products; 
+  const finalProducts = productsToRender || products;
 
   if (finalProducts.length === 0) {
     mainGridContainer.innerHTML = `
@@ -355,14 +349,13 @@ function renderProducts(productsToRender) {
   // Dibuja TODAS las tarjetas en el único contenedor
   finalProducts.forEach((product) => {
     // Asegúrate de que tienes una función 'createProductCard' definida en otra parte del script
-    const productCard = createProductCard(product); 
+    const productCard = createProductCard(product);
     mainGridContainer.appendChild(productCard);
   });
-  
-  // Llama a la función para configurar los botones de producto si es necesario
-  updateProductButtons(); 
-}
 
+  // Llama a la función para configurar los botones de producto si es necesario
+  updateProductButtons();
+}
 
 // Create product card element
 /**
@@ -379,7 +372,7 @@ function createProductCard(product) {
   card.className = `product-card ${!product.activo ? "inactive" : ""}`;
 
   const imageContent = product.imagen
-    ? `<img src="${product.imagen}" alt="${product.nombre}" onerror="this.style.display='none'; this.parentElement.innerHTML='🍽️';">`
+    ? `<img src="${product.imagen}" alt="${product.nombre}" onerror="this.style.display='none'; this.parentElement.innerHTML='<img src=&quot;' + DEFAULT_IMG_URL + '&quot; alt=&quot;default&quot; style=&quot;width:100%;height:100%;object-fit:cover;&quot;>';">`
     : getCategoryEmoji(product.categoria);
 
   const descripcionValue =
@@ -440,28 +433,35 @@ function createProductCard(product) {
 }
 
 // ✅ Get emoji based on category
+const DEFAULT_IMG_URL =
+  "https://mrgeorge2022.github.io/Uploader/imagenes/default.jpg";
 /**
  * getCategoryEmoji
  * ----------------
- * Devuelve un emoji representativo según la categoría.
+ * Devuelve un emoji representativo según la categoría, o una imagen por defecto.
  * @param {string} categoria
- * @returns {string} emoji
+ * @returns {string} emoji o html img tag
  */
 function getCategoryEmoji(categoria) {
   // Primero intenta encontrar el emoji en config.json
   if (configTienda?.categorias) {
     const match = configTienda.categorias.find(
-      c => c.id.toLowerCase() === categoria.toLowerCase()
+      (c) => c.id.toLowerCase() === categoria.toLowerCase(),
     );
     if (match && match.emoji) return match.emoji;
   }
 
-  // Si no está en config.json, usar fallback
-  const emojisFallback = {
-  };
-  return emojisFallback[categoria.toLowerCase()] || "🍽️";
-}
+  // Si no está en config.json, usar imagen por defecto
+  const emojisFallback = {};
+  const fallback = emojisFallback[categoria.toLowerCase()];
+  if (fallback) return fallback;
 
+  return (
+    '<img src="' +
+    DEFAULT_IMG_URL +
+    '" alt="Imagen por defecto" style="width:100%; height:100%; object-fit:cover;">'
+  );
+}
 
 // Format price in Colombian pesos
 /**
@@ -503,7 +503,9 @@ function openProductModal(product) {
 
   // Actualizar contenido del modal
   document.getElementById("modal-product-name").textContent = product.nombre;
-  document.getElementById("modal-product-price").textContent = formatPrice(product.precio);
+  document.getElementById("modal-product-price").textContent = formatPrice(
+    product.precio,
+  );
 
   const descripcionValue =
     product.descripcion ||
@@ -511,10 +513,13 @@ function openProductModal(product) {
     product.DESCRIPCION ||
     product.descripción;
   const description =
-    descripcionValue && descripcionValue.toString().trim() !== "" && descripcionValue !== "undefined"
+    descripcionValue &&
+    descripcionValue.toString().trim() !== "" &&
+    descripcionValue !== "undefined"
       ? descripcionValue
       : "Sin descripción disponible";
-  document.getElementById("modal-product-description").textContent = description;
+  document.getElementById("modal-product-description").textContent =
+    description;
 
   // Imagen
   const modalImage = document.getElementById("modal-image-content");
@@ -531,14 +536,21 @@ function openProductModal(product) {
 
   // 🧼 Eliminar configuraciones anteriores si existen
   try {
-    if (window.ProductosVariable && typeof window.ProductosVariable.removeProductConfigOptions === "function") {
+    if (
+      window.ProductosVariable &&
+      typeof window.ProductosVariable.removeProductConfigOptions === "function"
+    ) {
       window.ProductosVariable.removeProductConfigOptions();
     } else {
       const existing = document.getElementById("extra-options");
       if (existing) existing.remove();
     }
 
-    if (product.config && window.ProductosVariable && typeof window.ProductosVariable.renderProductConfigOptions === "function") {
+    if (
+      product.config &&
+      window.ProductosVariable &&
+      typeof window.ProductosVariable.renderProductConfigOptions === "function"
+    ) {
       window.ProductosVariable.renderProductConfigOptions(product.config);
     }
   } catch (e) {
@@ -549,10 +561,9 @@ function openProductModal(product) {
   productModalEl.classList.add("show");
   updateAddToCartButton();
 
-    // 🚫 Bloquear scroll general del body
+  // 🚫 Bloquear scroll general del body
   document.body.style.overflow = "hidden";
 }
-
 
 /**
  * closeProductModal
@@ -624,8 +635,6 @@ function handleManualQuantityInput(e) {
   updateAddToCartButton(); // actualiza el precio dinámicamente
 }
 
-
-
 /**
  * updateQuantityButtons
  * ---------------------
@@ -651,7 +660,6 @@ function updateAddToCartButton() {
   priceSpan.textContent = formatPrice(total);
 }
 
-
 /**
  * addToCartFromModal
  * ------------------
@@ -661,7 +669,9 @@ function updateAddToCartButton() {
  */
 function addToCartFromModal() {
   if (!window.tiendaAbierta) {
-    alert("⏰ Lo sentimos, la tienda está cerrada. Te invitamos a ver nuestro horario.");
+    alert(
+      "⏰ Lo sentimos, la tienda está cerrada. Te invitamos a ver nuestro horario.",
+    );
     closeProductModal();
     return;
   }
@@ -669,32 +679,41 @@ function addToCartFromModal() {
 
   // --- Capturar opciones de configuración ---
   let extraInstructions = "";
-if (window.ProductosVariable && typeof window.ProductosVariable.collectProductConfigInstructions === 'function') {
-  const result = window.ProductosVariable.collectProductConfigInstructions();
-  if (result === null) {
-    // ❌ Si no pasó validación, no agregamos al carrito
-    return;
+  if (
+    window.ProductosVariable &&
+    typeof window.ProductosVariable.collectProductConfigInstructions ===
+      "function"
+  ) {
+    const result = window.ProductosVariable.collectProductConfigInstructions();
+    if (result === null) {
+      // ❌ Si no pasó validación, no agregamos al carrito
+      return;
+    }
+    extraInstructions = result;
   }
-  extraInstructions = result;
-}
-
 
   const instructions = [
     document.getElementById("product-instructions").value.trim(),
-    extraInstructions
-  ].filter(Boolean).join(" | ");
+    extraInstructions,
+  ]
+    .filter(Boolean)
+    .join(" | ");
 
   // 🔹 Mostrar opciones en el modal antes de agregar al carrito
   const selectedContainer = document.getElementById("modal-selected-options");
   if (selectedContainer) {
-    selectedContainer.textContent = instructions || "Sin configuraciones adicionales";
+    selectedContainer.textContent =
+      instructions || "Sin configuraciones adicionales";
   }
 
   // Crear ID único si hay instrucciones
-  const itemId = instructions ? `${currentProduct.id}_${Date.now()}` : currentProduct.id;
+  const itemId = instructions
+    ? `${currentProduct.id}_${Date.now()}`
+    : currentProduct.id;
 
   const existingItem = cart.find(
-    (item) => item.id === currentProduct.id && item.instructions === instructions
+    (item) =>
+      item.id === currentProduct.id && item.instructions === instructions,
   );
 
   if (existingItem && !instructions) {
@@ -725,7 +744,6 @@ if (window.ProductosVariable && typeof window.ProductosVariable.collectProductCo
   }, 500);
 }
 
-
 // Cart functions
 /**
  * addToCart
@@ -735,13 +753,13 @@ if (window.ProductosVariable && typeof window.ProductosVariable.collectProductCo
  * @param {string} productId
  */
 function addToCart(productId) {
-
   // 🚫 Bloquear si la tienda está cerrada
   if (!window.tiendaAbierta) {
-    alert("⏰ Lo sentimos, la tienda está cerrada. Te invitamos a ver nuestro horario.");
+    alert(
+      "⏰ Lo sentimos, la tienda está cerrada. Te invitamos a ver nuestro horario.",
+    );
     return;
   }
-
 
   // Try to find the cart line by exact id (cart item id)
   const asStr = String(productId);
@@ -759,7 +777,7 @@ function addToCart(productId) {
   // productId may be a suffixed id like '123_1600000000', so compare by original part too
   const originalId = asStr.split("_")[0];
   const product = products.find(
-    (p) => String(p.id) === asStr || String(p.id) === originalId
+    (p) => String(p.id) === asStr || String(p.id) === originalId,
   );
   if (!product || !product.activo) return;
 
@@ -798,7 +816,11 @@ function removeFromCart(productId) {
   // 3) If still not found, try matching using the prefix before '_' (for suffixed ids)
   if (itemIndex === -1) {
     const prefix = asStr.split("_")[0];
-    itemIndex = cart.findIndex((item) => String(item.originalId) === prefix || String(item.id).split("_")[0] === prefix);
+    itemIndex = cart.findIndex(
+      (item) =>
+        String(item.originalId) === prefix ||
+        String(item.id).split("_")[0] === prefix,
+    );
   }
 
   if (itemIndex === -1) {
@@ -827,7 +849,10 @@ function removeFromCart(productId) {
  */
 function updateCartDisplay() {
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalPrice = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
 
   const cartCountEl = document.getElementById("cart-count");
   const cartTotalEl = document.getElementById("cart-total");
@@ -835,7 +860,7 @@ function updateCartDisplay() {
 
   if (totalItems > 0) {
     cartFloatEl.classList.add("show-info");
-    
+
     // 1. Estado Inicial: Muestra cantidad y total
     cartCountEl.textContent = `${totalItems} producto${totalItems !== 1 ? "s" : ""}`;
     cartTotalEl.textContent = formatPrice(totalPrice);
@@ -848,15 +873,14 @@ function updateCartDisplay() {
     window.cartAnimationTimer = setTimeout(() => {
       // Aplicamos una clase para iniciar la transición
       cartFloatEl.classList.add("cart-minimized");
-      
+
       // Cambiamos el texto con una pequeña demora para que coincida con la animación CSS
       setTimeout(() => {
         cartCountEl.innerHTML = `<span class="slide-text">Completar pedido</span>`;
         // Opcional: puedes ocultar el precio total aquí si quieres que solo se vea el texto
-        // cartTotalEl.style.opacity = "0"; 
+        // cartTotalEl.style.opacity = "0";
       }, 300);
     }, 3000); // 3 segundos de espera
-
   } else {
     // Carrito vacío
     cartFloatEl.classList.remove("show-info", "cart-minimized");
@@ -867,7 +891,6 @@ function updateCartDisplay() {
 
   localStorage.setItem("cart", JSON.stringify(cart));
 }
-
 
 /**
  * openCart
@@ -888,9 +911,8 @@ function openCart() {
   void cartContent.offsetWidth; // forzar reflow
   cartContent.style.animation = "slideInCart 0.4s ease forwards";
 
-// 🚫 Bloquear scroll general del body
-document.body.style.overflow = "hidden";
-
+  // 🚫 Bloquear scroll general del body
+  document.body.style.overflow = "hidden";
 
   renderCartItems();
 }
@@ -912,10 +934,8 @@ function closeCart() {
 
     // ✅ Restaurar scroll general
     document.body.style.overflow = "";
-
   }, 400);
 }
-
 
 /**
  * renderCartItems
@@ -925,8 +945,8 @@ function closeCart() {
  */
 function renderCartItems() {
   const cartItemsEl = document.getElementById("cart-items");
-if (cart.length === 0) {
-  cartItemsEl.innerHTML = `
+  if (cart.length === 0) {
+    cartItemsEl.innerHTML = `
     <div class="cart-empty">
       <p class="cart-empty-text">Tu carrito está vacío</p>
       <button class="btn-add-products" onclick="closeCart(); window.scrollTo({ top: 0, behavior: 'smooth' });">
@@ -934,21 +954,19 @@ if (cart.length === 0) {
       </button>
     </div>
   `;
-  return;
-}
-
-
+    return;
+  }
 
   cartItemsEl.innerHTML = cart
     .map((item, index) => {
       const product = products.find(
-        (p) => p.id === item.originalId || p.id === item.id
+        (p) => p.id === item.originalId || p.id === item.id,
       );
 
-const imageHTML = product?.imagen
-  ? `<img src="${product.imagen}" alt="${item.name}" class="cart-item-image" 
+      const imageHTML = product?.imagen
+        ? `<img src="${product.imagen}" alt="${item.name}" class="cart-item-image" 
        onerror="this.style.display='none'; this.parentElement.innerHTML='${getCategoryEmoji(product.categoria)}';">`
-  : `<div class="cart-item-placeholder">${getCategoryEmoji(product?.categoria || "")}</div>`;
+        : `<div class="cart-item-placeholder">${getCategoryEmoji(product?.categoria || "")}</div>`;
 
       return `
         <div class="cart-item" data-index="${index}">
@@ -1022,7 +1040,6 @@ function removeCartItem(index, itemEl) {
   }
 }
 
-
 /**
  * clearCart
  * ---------
@@ -1036,7 +1053,6 @@ function clearCart() {
     localStorage.removeItem("cart");
   }
 }
-
 
 /**
  * checkout
@@ -1080,9 +1096,6 @@ function checkout() {
   openDeliveryModal();
 }
 
-
-
-
 const deliveryModalEl = document.getElementById("delivery-modal");
 
 function openDeliveryModal() {
@@ -1109,23 +1122,24 @@ function closeDeliveryModal() {
 }
 
 function selectDeliveryType(type) {
-    closeDeliveryModal();
+  closeDeliveryModal();
 
-    const cartTotal = localStorage.getItem("cartTotal") || 0;
+  const cartTotal = localStorage.getItem("cartTotal") || 0;
 
-    // Guardar observaciones si existen
-    const observaciones = document.getElementById("cart-notes")?.value.trim() || "";
-    localStorage.setItem("cartObservaciones", observaciones);
-    
-    // 🔥 CRÍTICO: Guardar el tipo de entrega
-    currentDeliveryType = type; 
+  // Guardar observaciones si existen
+  const observaciones =
+    document.getElementById("cart-notes")?.value.trim() || "";
+  localStorage.setItem("cartObservaciones", observaciones);
 
-    if (type === "Recoger en tienda" || type === "Mesa") {
-        // Al abrir el modal, le pasamos el tipo para que sepa cómo configurarse.
-        openCustomerModal(type); 
-    } else if (type === "Domicilio") {
-        window.location.href = "domicilio.html";
-    }
+  // 🔥 CRÍTICO: Guardar el tipo de entrega
+  currentDeliveryType = type;
+
+  if (type === "Recoger en tienda" || type === "Mesa") {
+    // Al abrir el modal, le pasamos el tipo para que sepa cómo configurarse.
+    openCustomerModal(type);
+  } else if (type === "Domicilio") {
+    window.location.href = "domicilio.html";
+  }
 }
 
 // ================================
@@ -1157,10 +1171,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-
-
-
-
 // ==========================================
 // 🧍 MODAL DE DATOS DEL CLIENTE
 // ==========================================
@@ -1169,47 +1179,45 @@ const customerForm = document.getElementById("customer-form");
 const mesaField = document.getElementById("mesa-field");
 
 function openCustomerModal(type) {
-    // Definiciones de elementos (si no están ya fuera de la función)
-    const mesaField = document.getElementById("mesa-field");
-    const customerForm = document.getElementById("customer-form");
-    const customerModalEl = document.getElementById("customer-modal"); // Asumiendo que es el ID del modal
-    const mesaInput = document.getElementById("customer-mesa"); // 🔥 Necesitamos el input
+  // Definiciones de elementos (si no están ya fuera de la función)
+  const mesaField = document.getElementById("mesa-field");
+  const customerForm = document.getElementById("customer-form");
+  const customerModalEl = document.getElementById("customer-modal"); // Asumiendo que es el ID del modal
+  const mesaInput = document.getElementById("customer-mesa"); // 🔥 Necesitamos el input
 
-    currentDeliveryType = type;
-    document.getElementById("customer-modal-title").textContent =
-        type === "Mesa" ? "Pedido en mesa" : "Recoger en tienda";
+  currentDeliveryType = type;
+  document.getElementById("customer-modal-title").textContent =
+    type === "Mesa" ? "Pedido en mesa" : "Recoger en tienda";
 
-    // Mostrar o esconder campo de mesa según el tipo
-    mesaField.style.display = type === "Mesa" ? "block" : "none";
+  // Mostrar o esconder campo de mesa según el tipo
+  mesaField.style.display = type === "Mesa" ? "block" : "none";
 
-    // 🔥 CRÍTICO: Manipular el atributo 'required' del input de mesa
-    if (type === "Mesa") {
-        // Si es Mesa, nos aseguramos de que sea requerido (aunque ya lo tenga en el HTML)
-        mesaInput.setAttribute("required", "required");
-    } else {
-        // Si es Recoger en tienda, eliminamos la restricción 'required'
-        // para que el formulario se pueda enviar sin el número de mesa.
-        mesaInput.removeAttribute("required"); 
-        mesaInput.value = ""; // Limpiar el valor por si acaso
-    }
+  // 🔥 CRÍTICO: Manipular el atributo 'required' del input de mesa
+  if (type === "Mesa") {
+    // Si es Mesa, nos aseguramos de que sea requerido (aunque ya lo tenga en el HTML)
+    mesaInput.setAttribute("required", "required");
+  } else {
+    // Si es Recoger en tienda, eliminamos la restricción 'required'
+    // para que el formulario se pueda enviar sin el número de mesa.
+    mesaInput.removeAttribute("required");
+    mesaInput.value = ""; // Limpiar el valor por si acaso
+  }
 
-    // Limpiar formulario y mostrar modal
-    customerForm.reset();
-    customerModalEl.classList.add("show");
+  // Limpiar formulario y mostrar modal
+  customerForm.reset();
+  customerModalEl.classList.add("show");
 }
 
 function closeCustomerModal() {
-    // Si cierras el modal con la X o el botón Cancelar, también es buena práctica quitar el required.
-    const mesaInput = document.getElementById("customer-mesa");
-    if(mesaInput) {
-        mesaInput.removeAttribute("required");
-    }
-    
-    // ... resto de tu función
-    customerModalEl.classList.remove("show");
+  // Si cierras el modal con la X o el botón Cancelar, también es buena práctica quitar el required.
+  const mesaInput = document.getElementById("customer-mesa");
+  if (mesaInput) {
+    mesaInput.removeAttribute("required");
+  }
+
+  // ... resto de tu función
+  customerModalEl.classList.remove("show");
 }
-
-
 
 // ============================================
 // 🧾 FORMULARIO DE DATOS DEL CLIENTE (ENVÍO A WHATSAPP)
@@ -1220,7 +1228,8 @@ customerForm.addEventListener("submit", async (e) => {
   const name = document.getElementById("customer-name").value.trim();
   const phone = document.getElementById("customer-phone").value.trim();
   const mesa = document.getElementById("customer-mesa")?.value.trim() || null;
-  const metodoPago = document.getElementById("payment-method")?.value || "No especificado";
+  const metodoPago =
+    document.getElementById("payment-method")?.value || "No especificado";
 
   if (!name || !phone) {
     alert("Por favor ingresa tu nombre y teléfono.");
@@ -1228,12 +1237,15 @@ customerForm.addEventListener("submit", async (e) => {
   }
 
   // 🧮 Calcular totales
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const productos = cart.map(item => ({
+  const subtotal = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
+  const productos = cart.map((item) => ({
     nombre: item.name,
     precio: item.price,
     cantidad: item.quantity,
-    instrucciones: item.instructions || ""
+    instrucciones: item.instructions || "",
   }));
 
   // 🕒 Generar fecha y hora actual
@@ -1244,59 +1256,58 @@ customerForm.addEventListener("submit", async (e) => {
   // 🧾 Generar número de factura
   const nombreCodigo = name.substring(0, 3).toUpperCase();
   const telefonoCodigo = phone.slice(-3);
-  const factura = `#${nombreCodigo}${telefonoCodigo}${fecha.getFullYear().toString().slice(-2)}${String(fecha.getMonth() + 1).padStart(2, '0')}${String(fecha.getDate()).padStart(2, '0')}${String(fecha.getHours()).padStart(2, '0')}${String(fecha.getMinutes()).padStart(2, '0')}${String(fecha.getSeconds()).padStart(2, '0')}`;
+  const factura = `#${nombreCodigo}${telefonoCodigo}${fecha.getFullYear().toString().slice(-2)}${String(fecha.getMonth() + 1).padStart(2, "0")}${String(fecha.getDate()).padStart(2, "0")}${String(fecha.getHours()).padStart(2, "0")}${String(fecha.getMinutes()).padStart(2, "0")}${String(fecha.getSeconds()).padStart(2, "0")}`;
 
   // 💰 Totales
   const costoDomicilio = 0;
   const total = subtotal + costoDomicilio;
-  const propina = Math.round(total * 0.10);
+  const propina = Math.round(total * 0.1);
   const totalConPropina = total + propina;
 
-// 📝 Capturar observaciones del carrito (si existen)
-const observaciones =
-  document.getElementById("cart-notes")?.value.trim() || "";
+  // 📝 Capturar observaciones del carrito (si existen)
+  const observaciones =
+    document.getElementById("cart-notes")?.value.trim() || "";
 
-// 📦 Crear objeto del pedido
-const pedido = {
-  tipoEntrega: currentDeliveryType,
-  factura,
-  fecha: fechaTexto,
-  hora: horaTexto,
-  cliente: {
-    nombre: name,
-    telefono: phone,
-    mesa: currentDeliveryType === "Mesa" ? mesa : null // 👈 aquí capturamos el número de mesa
-  },
-  direccion: currentDeliveryType === "Domicilio" ? (document.getElementById("buscar")?.value || "") : "",
-  referencia: "",
-  productos,
-  subtotal,
-  costoDomicilio,
-  total,
-  metodoPago,
-  propina,
-  totalConPropina,
-  observaciones,
-  ubicacion: null
-};
+  // 📦 Crear objeto del pedido
+  const pedido = {
+    tipoEntrega: currentDeliveryType,
+    factura,
+    fecha: fechaTexto,
+    hora: horaTexto,
+    cliente: {
+      nombre: name,
+      telefono: phone,
+      mesa: currentDeliveryType === "Mesa" ? mesa : null, // 👈 aquí capturamos el número de mesa
+    },
+    direccion:
+      currentDeliveryType === "Domicilio"
+        ? document.getElementById("buscar")?.value || ""
+        : "",
+    referencia: "",
+    productos,
+    subtotal,
+    costoDomicilio,
+    total,
+    metodoPago,
+    propina,
+    totalConPropina,
+    observaciones,
+    ubicacion: null,
+  };
 
-// 💾 Guardar pedido para factura
-localStorage.setItem('lastPedido', JSON.stringify(pedido));
+  // 💾 Guardar pedido para factura
+  localStorage.setItem("lastPedido", JSON.stringify(pedido));
 
-// � SIEMPRE enviar pedido (para mostrar el modal)
-// La función enviarPedidoWhatsApp() decide internamente si envía a WhatsApp o no
-enviarPedidoWhatsApp(pedido);
-enviarPedidoASheets(pedido);
+  // � SIEMPRE enviar pedido (para mostrar el modal)
+  // La función enviarPedidoWhatsApp() decide internamente si envía a WhatsApp o no
+  enviarPedidoWhatsApp(pedido);
+  enviarPedidoASheets(pedido);
 
-// 🧹 Limpiar carrito y cerrar modal
-cart = [];
-updateCartDisplay();
-closeCustomerModal();
+  // 🧹 Limpiar carrito y cerrar modal
+  cart = [];
+  updateCartDisplay();
+  closeCustomerModal();
 });
-
-
-
-
 
 // ==================================================
 // ✅ SCROLL CATEGORÍAS MEJORADO Y COMPATIBLE
@@ -1324,7 +1335,7 @@ function scrollToSection(sectionId) {
   // Actualizar el botón activo
   buttons.forEach((btn) => btn.classList.remove("active"));
   const clickedButton = Array.from(buttons).find(
-    (btn) => btn.dataset.target === sectionId
+    (btn) => btn.dataset.target === sectionId,
   );
   if (clickedButton) clickedButton.classList.add("active");
 
@@ -1369,7 +1380,7 @@ window.addEventListener("scroll", () => {
   // Actualizar el botón activo
   buttons.forEach((btn) => btn.classList.remove("active"));
   const activeBtn = Array.from(buttons).find(
-    (btn) => btn.dataset.target === current
+    (btn) => btn.dataset.target === current,
   );
   if (activeBtn) {
     activeBtn.classList.add("active");
@@ -1394,7 +1405,6 @@ window.addEventListener("scroll", () => {
     }
   }
 });
-
 
 // ==================================================
 // 🔹 UTILIDADES DE ESTADO (loading / error)
@@ -1440,13 +1450,3 @@ cartModalEl.addEventListener("click", (e) => {
 productModalEl.addEventListener("click", (e) => {
   if (e.target === productModalEl) closeProductModal();
 });
-
-
-
-
-
-
-
-
-
-
