@@ -17,7 +17,7 @@ async function cargarConfig() {
     if (data?.coordenadasSede) tiendaCoords = data.coordenadasSede;
     if (data?.logo) logoTienda = data.logo;
     if (data?.sede?.nombre) nombreTienda = data.sede.nombre;
-    
+
     // ✅ Guardar configuración global para usarla después
     config = data;
 
@@ -30,89 +30,8 @@ async function cargarConfig() {
 
 let costoDomicilio = 0;
 
-// ===============================
-// 🛵 ANIMACIÓN DE LA MOTOCICLETA (NUEVO CÓDIGO)
-// ===============================
-
-let markerMoto = null;
-let animationInterval = null;
-const MOTO_ICON_URL = "iconos/moto.png"; // ⚠️ ¡Asegúrate de que esta ruta sea correcta!
-
 /**
- * 🎨 Crea el ícono de la motocicleta.
  */
-function crearIconoMoto() {
-  return L.icon({
-    iconUrl: MOTO_ICON_URL,
-    iconSize: [40, 40], // Ajusta el tamaño según tu imagen
-    iconAnchor: [20, 20], // El centro del ícono
-    popupAnchor: [0, -20],
-    className: "moto-marker", // Para CSS si lo necesitas
-  });
-}
-
-/**
- * 🛵 Inicia la animación de la motocicleta a lo largo de la ruta.
- * @param {Array<L.LatLng>} puntosRuta Array de coordenadas LatLng.
- */
-function animarRuta(puntosRuta) {
-  // 1. Limpiar cualquier animación anterior
-  if (animationInterval) {
-    clearInterval(animationInterval);
-    animationInterval = null;
-  }
-  // Eliminar el marcador anterior si existe
-  if (markerMoto) {
-    map.removeLayer(markerMoto);
-    markerMoto = null;
-  }
-
-  if (puntosRuta.length < 2) return;
-
-  // 2. Crear el marcador de la moto en el punto de inicio (sede)
-  markerMoto = L.marker(tiendaCoords, {
-    icon: crearIconoMoto(),
-    zIndexOffset: 1000, // Para que esté siempre encima
-  }).addTo(map);
-
-  let indicePuntoActual = 0;
-  const velocidad = 15; // Velocidad de la animación (cuantos puntos saltar en cada paso)
-  const intervaloMs = 100; // Intervalo de tiempo para la actualización
-
-  // 3. Función de animación
-  animationInterval = setInterval(() => {
-    indicePuntoActual += velocidad;
-
-    if (indicePuntoActual >= puntosRuta.length) {
-      // 4. Detener la animación al llegar al final
-      clearInterval(animationInterval);
-      animationInterval = null;
-      // Posicionar la moto en el destino final
-      markerMoto.setLatLng(puntosRuta[puntosRuta.length - 1]); 
-      return;
-    }
-
-    const punto = puntosRuta[indicePuntoActual];
-    const puntoAnterior = puntosRuta[Math.max(0, indicePuntoActual - velocidad)];
-
-    // 5. Mover el marcador
-    markerMoto.setLatLng(punto);
-
-    // 6. Calcular la rotación (opcional: para que la moto mire en la dirección de viaje)
-    // NOTA: Para usar L.GeometryUtil.bearing, necesitas la librería leaflet-geometryutil.
-    // Si no la tienes, simplemente omite la rotación.
-    // Aquí se deja comentada la rotación para evitar errores de librería no incluida.
-    /*
-    if (typeof L.GeometryUtil !== 'undefined') {
-        const angulo = L.GeometryUtil.bearing(puntoAnterior, punto);
-        const iconElement = markerMoto.getElement();
-        if (iconElement) {
-            iconElement.style.transform += ` rotate(${angulo}deg)`;
-        }
-    }
-    */
-  }, intervaloMs);
-}
 
 // ================================
 // 🎨 ÍCONOS PERSONALIZADOS
@@ -303,7 +222,7 @@ function initMap() {
         '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> | <a href="https://carto.com/">CARTO</a>',
       subdomains: "abcd",
       maxZoom: 19,
-    }
+    },
   ).addTo(map);
 
   map.zoomControl.setPosition("bottomleft");
@@ -354,12 +273,12 @@ if (_btnUbicacion) {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
-        if (typeof map !== 'undefined') map.setView([latitude, longitude], 15);
+        if (typeof map !== "undefined") map.setView([latitude, longitude], 15);
         await mostrarMarcadorUsuario(latitude, longitude);
         await detectarDireccion(latitude, longitude);
         calcularRutaYCostos([latitude, longitude]);
       },
-      () => alert("No se pudo obtener la ubicación actual.")
+      () => alert("No se pudo obtener la ubicación actual."),
     );
   });
 }
@@ -397,7 +316,7 @@ if (searchInput && suggestionsEl) {
       div.addEventListener("click", async () => {
         searchInput.value = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
         suggestionsEl.style.display = "none";
-        if (typeof map !== 'undefined') map.setView([lat, lon], 15);
+        if (typeof map !== "undefined") map.setView([lat, lon], 15);
         await mostrarMarcadorUsuario(lat, lon);
         detectarDireccion(lat, lon);
         calcularRutaYCostos([lat, lon]);
@@ -414,7 +333,7 @@ if (searchInput && suggestionsEl) {
       div.addEventListener("click", async () => {
         searchInput.value = b.nombre;
         suggestionsEl.style.display = "none";
-        if (typeof map !== 'undefined') map.setView([b.lat, b.lon], 15);
+        if (typeof map !== "undefined") map.setView([b.lat, b.lon], 15);
         await mostrarMarcadorUsuario(b.lat, b.lon);
         detectarDireccion(b.lat, b.lon);
         calcularRutaYCostos([b.lat, b.lon]);
@@ -428,8 +347,8 @@ if (searchInput && suggestionsEl) {
       try {
         const res = await fetch(
           `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-            query + ", Cartagena"
-          )}`
+            query + ", Cartagena",
+          )}`,
         );
         const data = await res.json();
         data.slice(0, 4).forEach((place) => {
@@ -440,7 +359,7 @@ if (searchInput && suggestionsEl) {
             const lon = parseFloat(place.lon);
             searchInput.value = place.display_name;
             suggestionsEl.style.display = "none";
-            if (typeof map !== 'undefined') map.setView([lat, lon], 15);
+            if (typeof map !== "undefined") map.setView([lat, lon], 15);
             await mostrarMarcadorUsuario(lat, lon);
             detectarDireccion(lat, lon);
             calcularRutaYCostos([lat, lon]);
@@ -480,93 +399,161 @@ async function detectarDireccion(lat, lon) {
 }
 
 // ================================
-// 🚗 CALCULAR RUTA Y COSTOS CON MÍNIMO Y RECARGO NOCTURNO (MODIFICADO)
+// 🚗 CALCULAR RUTA Y COSTOS — INSTANTÁNEO SIN SERVIDOR EXTERNO
+// Haversine * factor urbano 1.35 + línea visual animada en el mapa
 // ================================
+
+let rutaPolylines = []; // guarda las capas de la ruta para limpiarlas
+
 function calcularRutaYCostos(destino) {
-  if (routingControl) map.removeControl(routingControl);
+  // 🧹 Limpiar ruta anterior
+  if (routingControl) {
+    map.removeControl(routingControl);
+    routingControl = null;
+  }
+  rutaPolylines.forEach((l) => map.removeLayer(l));
+  rutaPolylines = [];
+  document.getElementById("map").classList.remove("route-pulsing");
 
-    // 🧹 Limpia cualquier animación anterior antes de empezar una nueva ruta
-    document.getElementById('map').classList.remove('route-pulsing'); 
+  // Normalizar destino: puede llegar como [lat,lng] o como objeto L.LatLng
+  const dLat = Array.isArray(destino) ? destino[0] : destino.lat;
+  const dLng = Array.isArray(destino) ? destino[1] : destino.lng;
 
-  routingControl = L.Routing.control({
-    waypoints: [L.latLng(tiendaCoords), L.latLng(destino)],
-    lineOptions: {
-      styles: [
-        { color: "rgba(255,255,255,0.25)", weight: 8 },
-        { color: "#007bff", weight: 5, opacity: 0.8 },
-      ],
-    },
-    addWaypoints: false,
-    draggableWaypoints: false,
-    createMarker: () => null,
-    show: false,
-  })
-    .on("routesfound", (e) => {
-        // 🚨 ACTIVA LA ANIMACIÓN DE LA LUZ INTERMITENTE
-        document.getElementById('map').classList.add('route-pulsing'); 
-        
-        // OBTENEMOS LA RUTA Y LOS LÍMITES
-        const ruta = e.routes[0];
-        const distanciaKm = ruta.summary.totalDistance / 1000;
+  // ─── 📐 Distancia haversine ─────────────────────────────────────────
+  const R = 6371;
+  const dLatRad = ((dLat - tiendaCoords[0]) * Math.PI) / 180;
+  const dLonRad = ((dLng - tiendaCoords[1]) * Math.PI) / 180;
+  const a =
+    Math.sin(dLatRad / 2) ** 2 +
+    Math.cos((tiendaCoords[0] * Math.PI) / 180) *
+      Math.cos((dLat * Math.PI) / 180) *
+      Math.sin(dLonRad / 2) ** 2;
+  const distanciaLineal = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distanciaKm = distanciaLineal * 1.35; // factor urbano Cartagena
 
-        // 🎯 CÓDIGO CLAVE PARA CENTRAR Y ESCALAR LA RUTA:
-        // 1. Obtener los límites geográficos de la ruta
-        const bounds = ruta.coordinates.reduce((acc, coord) => {
-            return acc.extend(coord);
-        }, L.latLngBounds([ruta.coordinates[0]]));
+  // ─── 🗺️ Arco inteligente + sombra recta + etiqueta km ──────────────
 
-        // 2. Calcular el padding (relleno) para compensar los DIVs flotantes
-        const panelTotales = document.getElementById('panel-totales');
-        const overlay = document.querySelector('.overlay');
+  /**
+   * Bézier cuadrática direccional:
+   * La curva se abre hacia el lado donde está el destino respecto a la tienda.
+   * Altura muy sutil (8% de la distancia, máx 0.06°) para verse natural.
+   */
+  function generarArcoInteligente(lat1, lng1, lat2, lng2, pasos = 80) {
+    const dxLat = lat2 - lat1;
+    const dxLng = lng2 - lng1;
+    const distBase = Math.sqrt(dxLat ** 2 + dxLng ** 2);
+    const altura = Math.min(0.2, distBase * 0.3);
 
-        // Obtenemos la altura real de los elementos, si existen. Usamos un valor por defecto si no.
-        const paddingBottom = panelTotales ? panelTotales.offsetHeight : 150;
-        const paddingTop = overlay ? overlay.offsetHeight : 100;
+    const mLat = (lat1 + lat2) / 2;
+    const mLng = (lng1 + lng2) / 2;
 
-        // 3. Ajustar la vista del mapa con el padding calculado
-        map.fitBounds(bounds, {
-            paddingTopLeft: [10, paddingTop + 20],   // Ajuste para el overlay superior
-            paddingBottomRight: [10, paddingBottom + 20], // Ajuste para el panel inferior
-            maxZoom: 14 // Opcional: Evita un zoom demasiado cerca si la ruta es muy corta
-        });
-        // ----------------------------------------------------
-        // Obtener parámetros desde config (costo por km, base y mínima)
-        const valorKM = config?.domicilio?.costoPorKilometro || 1500;
-        const baseEnvio = config?.costoEnvioBase || 2000;
-        const tarifaMinima = config?.domicilio?.tarifaMinima || 3000;
-        const recargoNocturnoActivo = config?.domicilio?.recargoNocturnoActivo !== false; // true por defecto
+    const len = distBase || 1;
+    const perpLat = -dxLng / len;
+    const perpLng = dxLat / len;
 
-        // Cálculo base: distancia * valorKM + baseEnvio
-        let calculoInicial = (distanciaKm * valorKM) + baseEnvio;
+    // Si el destino está a la derecha (lng mayor) la curva se abre hacia la derecha
+    // Si está a la izquierda la curva se abre hacia la izquierda
+    const sentido = dxLng >= 0 ? -1 : 1;
 
-        // 🕒 Hora real
-        const hora = new Date().getHours();
-        let recargoTexto = "";
+    const cpLat = mLat + perpLat * altura * sentido;
+    const cpLng = mLng + perpLng * altura * sentido;
 
-        // 1️⃣ Aplicar tarifa mínima
-        let costoBase = Math.max(redondearACien(calculoInicial), tarifaMinima);
+    const puntos = [];
+    for (let i = 0; i <= pasos; i++) {
+      const t = i / pasos;
+      const lt = (1 - t) ** 2 * lat1 + 2 * (1 - t) * t * cpLat + t ** 2 * lat2;
+      const ln = (1 - t) ** 2 * lng1 + 2 * (1 - t) * t * cpLng + t ** 2 * lng2;
+      puntos.push([lt, ln]);
+    }
 
-        // 2️⃣ Aplicar recargo nocturno si aplica
-        if (recargoNocturnoActivo && (hora >= 22 || hora < 6)) {
-            const recargo = costoBase * 0.2;
-            recargoTexto = " (+20%)";
-            costoDomicilio = redondearACien(costoBase + recargo);
-        } else {
-            costoDomicilio = redondearACien(costoBase);
-        }
+    // Vértice de la curva (t = 0.5)
+    const vLat = 0.25 * lat1 + 0.5 * cpLat + 0.25 * lat2;
+    const vLng = 0.25 * lng1 + 0.5 * cpLng + 0.25 * lng2;
+    return { puntos, vLat, vLng };
+  }
 
-      // Actualizar la UI
-      actualizarCostos(recargoTexto, hora);
-    })
-    // 🧹 Limpia la animación si la ruta falla o se cancela
-    .on("routeabort", () => {
-        document.getElementById('map').classList.remove('route-pulsing');
-    })
-    .addTo(map);
+  const {
+    puntos: puntosArco,
+    vLat,
+    vLng,
+  } = generarArcoInteligente(tiendaCoords[0], tiendaCoords[1], dLat, dLng);
 
-  const style = document.createElement("style");
-  style.innerHTML = `.leaflet-routing-container { display: none !important; }`;
-  document.head.appendChild(style);
+  // Sombra recta (línea recta debajo del arco, efecto de profundidad)
+  const sombraRecta = L.polyline([tiendaCoords, [dLat, dLng]], {
+    color: "rgba(0,0,0,0.10)",
+    weight: 6,
+    lineCap: "round",
+  }).addTo(map);
+
+  // Halo blanco alrededor del arco
+  const halo = L.polyline(puntosArco, {
+    color: "rgba(255,255,255,0.55)",
+    weight: 10,
+    lineCap: "round",
+  }).addTo(map);
+
+  // Línea azul principal animada
+  const linea = L.polyline(puntosArco, {
+    color: "#007bff",
+    weight: 5,
+    opacity: 0.95,
+    lineCap: "round",
+    className: "ruta-animada",
+  }).addTo(map);
+
+  // Etiqueta de km en el vértice del arco
+  const kmTexto =
+    distanciaLineal >= 1
+      ? `${distanciaLineal.toFixed(1)} km`
+      : `${Math.round(distanciaLineal * 1000)} m`;
+
+  const labelKm = L.marker([vLat, vLng], {
+    icon: L.divIcon({
+      className: "",
+      html: `<div class="label-km">${kmTexto}</div>`,
+      iconAnchor: [38, 14],
+    }),
+    interactive: false,
+    zIndexOffset: 1000,
+  }).addTo(map);
+
+  rutaPolylines = [sombraRecta, halo, linea, labelKm];
+
+  // Activar pulso visual en el mapa
+  document.getElementById("map").classList.add("route-pulsing");
+
+  // 🎯 Centrar incluyendo el arco completo
+  const bounds = L.latLngBounds(puntosArco);
+  const panelTotales = document.getElementById("panel-totales");
+  const overlay = document.querySelector(".overlay");
+  const paddingBottom = panelTotales ? panelTotales.offsetHeight : 150;
+  const paddingTop = overlay ? overlay.offsetHeight : 100;
+  map.fitBounds(bounds, {
+    paddingTopLeft: [10, paddingTop + 20],
+    paddingBottomRight: [10, paddingBottom + 20],
+    maxZoom: 14,
+  });
+
+  // ─── 💰 Calcular costo ───────────────────────────────────────────────
+  const valorKM = config?.domicilio?.costoPorKilometro || 1500;
+  const baseEnvio = config?.costoEnvioBase || 1000;
+  const tarifaMinima = config?.domicilio?.tarifaMinima || 3000;
+  const recargoNocturnoActivo =
+    config?.domicilio?.recargoNocturnoActivo !== false;
+
+  const calculoInicial = distanciaKm * valorKM + baseEnvio;
+  const hora = new Date().getHours();
+  let recargoTexto = "";
+  let costoBase = Math.max(redondearACien(calculoInicial), tarifaMinima);
+
+  if (recargoNocturnoActivo && (hora >= 22 || hora < 6)) {
+    recargoTexto = " (+20%)";
+    costoDomicilio = redondearACien(costoBase * 1.2);
+  } else {
+    costoDomicilio = redondearACien(costoBase);
+  }
+
+  actualizarCostos(recargoTexto, hora);
 }
 
 // 💰 ACTUALIZAR COSTOS con recargo y hora real
@@ -588,8 +575,11 @@ function actualizarCostos(recargoTexto = "", hora = new Date().getHours()) {
   if (totalEl) totalEl.textContent = `$${formatoPesos(total)}`;
 
   // Mostrar mensaje de recargo solo si está activo en config Y es hora nocturna
-  const recargoNocturnoActivo = config?.domicilio?.recargoNocturnoActivo !== false;
-  if (recargoEl) recargoEl.style.display = (recargoNocturnoActivo && (hora >= 22 || hora < 6)) ? "block" : "none";
+  const recargoNocturnoActivo =
+    config?.domicilio?.recargoNocturnoActivo !== false;
+  if (recargoEl)
+    recargoEl.style.display =
+      recargoNocturnoActivo && (hora >= 22 || hora < 6) ? "block" : "none";
 }
 
 // ================================
@@ -770,10 +760,9 @@ function mostrarAlertaInicial() {
   setTimeout(() => {
     alertEl.classList.add("hidden");
     // Opcionalmente, puedes eliminar el elemento del DOM después de la transición
-    // setTimeout(() => { alertEl.remove(); }, 500); 
+    // setTimeout(() => { alertEl.remove(); }, 500);
   }, 3000);
 }
-
 
 // ================================
 // 🗺️ Inicialización (CÓDIGO CORREGIDO)
@@ -786,8 +775,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   mostrarAlertaInicial();
 
   // Si no existe el contenedor del mapa o Leaflet no está cargado, salimos.
-  const mapEl = document.getElementById('map');
-  if (!mapEl || typeof L === 'undefined') {
+  const mapEl = document.getElementById("map");
+  if (!mapEl || typeof L === "undefined") {
     return;
   }
 
@@ -799,12 +788,12 @@ window.addEventListener("DOMContentLoaded", async () => {
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
-        if (typeof map !== 'undefined') map.setView([latitude, longitude], 15);
+        if (typeof map !== "undefined") map.setView([latitude, longitude], 15);
         await mostrarMarcadorUsuario(latitude, longitude);
         await detectarDireccion(latitude, longitude);
         calcularRutaYCostos([latitude, longitude]);
       },
-      () => console.log("Geolocalización denegada o no disponible")
+      () => console.log("Geolocalización denegada o no disponible"),
     );
   }
 });
@@ -836,12 +825,12 @@ if (panel && btnLocate) {
 
 // Función global para que POS.js pueda calcular el costo igual que la web
 function obtenerCostoEnvioEstandar(distanciaKm) {
-    const valorKM = config?.costoPorKilometro || 1000;
-    const baseEnvio = config?.costoEnvioBase || 2000;
-    const TARIFA_MINIMA = 3000; // <--- Cambia aquí y se cambia en todo el sistema
+  const valorKM = config?.costoPorKilometro || 1000;
+  const baseEnvio = config?.costoEnvioBase || 2000;
+  const TARIFA_MINIMA = 3000; // <--- Cambia aquí y se cambia en todo el sistema
 
-    let costoCalculado = Math.round(distanciaKm * valorKM) + baseEnvio;
+  let costoCalculado = Math.round(distanciaKm * valorKM) + baseEnvio;
 
-    // Retornamos el valor, pero aseguramos que nunca sea menor a la mínima
-    return Math.max(TARIFA_MINIMA, costoCalculado);
+  // Retornamos el valor, pero aseguramos que nunca sea menor a la mínima
+  return Math.max(TARIFA_MINIMA, costoCalculado);
 }
