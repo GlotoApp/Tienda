@@ -1373,7 +1373,7 @@ function renderItems(list) {
             <div class="prod-info-box" onclick="toggleDesc(${p.id}, event)">
                 <div class="title-row">
                     <h4>${p.nombre}</h4>
-                    <span class="expand-icon" id="arrow-${p.id}">▼</span>s
+                    <span class="expand-icon" id="arrow-${p.id}">▼</span>
                 </div>
                 <div class="price-tag">$${precioFormateado}</div>
             </div>
